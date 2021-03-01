@@ -13,5 +13,6 @@ if (C_EMB_UTILS_CFG_PRODUCE_UNIT_TESTS)
 enable_testing()
 endif()
 
-add_subdirectory(struct-pack)
-
+add_subdirectory(struct_pack)
+add_subdirectory(simple_fsm)
+add_subdirectory(error_codes)
