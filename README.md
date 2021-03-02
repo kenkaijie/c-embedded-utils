@@ -11,6 +11,9 @@ TODO: Better building guide.
 
 # General Info
 
+## User Assumptions
+Input validation only occurs at the interface boundary. It is not required for private methods. (and discouraged)
+
 ## Thread Safety
 Thread safety is NOT implied here. Most things may work but assume that nothing is thread safe unless otherwise stated. In the header or function brief.
 

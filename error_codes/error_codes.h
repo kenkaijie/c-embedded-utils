@@ -9,6 +9,8 @@ enum e_error_codes
     ERR_NO_MEM, /**< There is insufficient memeory to process the request. */
     ERR_INVALID_ARG, /**< A provided argument is not within the acceptable domain */
     ERR_TIMEOUT, /**< A timed request took longer than usual */
+    ERR_OUT_OF_BOUNDS, /**< A requested value is not within the acceptable bounds (typically for arrays, or addressable values) */
+    ERR_NULL_POINTER, /**< A null pointer was seen where it was not expected. */
 };
 
 typedef uint32_t error_t;

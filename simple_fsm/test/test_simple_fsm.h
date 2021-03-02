@@ -1,0 +1,2 @@
+/* Notes for testing, mock a simple FSM, perform tests using cmocka on the states. */
+/* Make each state print their on entry/on event and on exit to a string which we then compare to validate the flow. */
