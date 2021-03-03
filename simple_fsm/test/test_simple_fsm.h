@@ -1,2 +1,8 @@
-/* Notes for testing, mock a simple FSM, perform tests using cmocka on the states. */
-/* Make each state print their on entry/on event and on exit to a string which we then compare to validate the flow. */
+#pragma once
+/**
+ *  @brief  Runs the configured tests.
+ * 
+ *  @returns    0 - Test passed
+ *              Non 0 - Test failed
+ */
+int test_simple_fsm_run_tests(void);

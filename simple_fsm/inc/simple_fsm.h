@@ -44,10 +44,10 @@ struct s_simple_fsm_state_delegates {
 
 struct s_simple_fsm_config {
     void * context; /**< Context to call the state functions by. */
-    simple_fsm_state_delegates_t * state_delegates; /**< The pointer to the array of state function pointers. Must all be non null. */
+    simple_fsm_state_delegates_t const * state_delegates; /**< The pointer to the array of state function pointers. Must all be non null. */
     size_t state_count; /**< The number of states. */
     size_t initial_state; /**< The initial state whose On Entry will be called when the FSM starts */
-    size_t max_recursion_depth; /**< Setting this to a non zero value ensures that the start and on_event calls will eventually end. */
+    size_t max_transition_count; /**< The maximum transitions any single event can trigger before returning. This prevents endless transitioning between the On Entry/On Exit states in the event of some catastrophic failure on a state machine with connected/strongly connected states. */
 };
 
 struct s_simple_fsm {
@@ -102,7 +102,7 @@ error_t simple_fsm_deinit(simple_fsm_t * fsm);
  * 
  *  @returns    ERR_NONE - success
  *              ERR_NOT_INITIALISED - fsm not initialised
- *              ERR_TIMEOUT - max recursion depth reached
+ *              ERR_TIMEOUT - Max transitions reached, FSM may be in an unknown state and should be reset. (Something bad happened)
  *              ERR_NULL_POINTER - a null pointer was found within
  *              ERR_OUT_OF_BOUNDS - a state requested a state outside of the bounds of the defined state machine
  */
@@ -111,14 +111,14 @@ error_t simple_fsm_start(simple_fsm_t * fsm);
 /**
  *  @brief   Passes the event to the fsm, which will act on the fsm.
  *  
- *  @note   Note this function may transition MANY states depending on the FSM provided.
+ *  @note   Note this function may transition MANY states depending on the FSM provided. Limited by the FSM's max transition setting.
  * 
  *  @param[in]  fsm - the fsm
  *  @param[in]  event - the event to pass through as a pointer, can be NULL
  * 
  *  @returns    ERR_NONE - Everything went well
  *              ERR_NOT_INITIALISED - fsm was not initialised
- *              ERR_TIMEOUT - max recursion depth reached
+ *              ERR_TIMEOUT - Max transitions reached, FSM may be in an unknown state and should be reset. (Something bad happened)
  *              ERR_NULL_POINTER - a null pointer was found within
  *              ERR_OUT_OF_BOUNDS - a state requested a state outside of the bounds of the defined state machine
  */

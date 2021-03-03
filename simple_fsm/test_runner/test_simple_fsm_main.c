@@ -1,4 +1,6 @@
+ #include "test_simple_fsm.h"
+
  int main(void)
  {
-     return 0;
+     return test_simple_fsm_run_tests();
  }

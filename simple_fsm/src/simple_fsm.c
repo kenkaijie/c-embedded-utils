@@ -1,6 +1,6 @@
 #include "simple_fsm.h"
 
-static inline error_t _get_delegate_from_state(simple_fsm_t * fsm, size_t state, simple_fsm_state_delegates_t ** handler);
+static inline error_t _get_delegate_from_state(simple_fsm_t * fsm, size_t state, simple_fsm_state_delegates_t const ** handler);
 static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state);
 static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state);
 
@@ -14,7 +14,7 @@ static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state);
  *  @returns    ERR_NONE - sucessfully fetched
  *              ERR_OUT_OF_BOUNDS - state is not within the acceptable bounds
  */
-static inline error_t _get_delegate_from_state(simple_fsm_t * fsm, size_t state, simple_fsm_state_delegates_t ** handler)
+static inline error_t _get_delegate_from_state(simple_fsm_t * fsm, size_t state, simple_fsm_state_delegates_t const ** handler)
 {
     if (state < fsm->m_config.state_count)
     {
@@ -31,12 +31,12 @@ static inline error_t _get_delegate_from_state(simple_fsm_t * fsm, size_t state,
  */
 static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state)
 {
-    simple_fsm_state_delegates_t * handler;
+    simple_fsm_state_delegates_t const * handler;
     error_t ret;
-    size_t loop_cycles_count = 0;
-    bool is_loop_cycle_limit_reached = false;
+    size_t transitions_count = 0;
+    bool is_transition_limit_reached = false;
 
-    while ((next_state != fsm->m_state) && (!is_loop_cycle_limit_reached))
+    while ((next_state != fsm->m_state) && (!is_transition_limit_reached))
     {
         // We need to keep the on exit state, in case we transition elsewhere from here.
         ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);
@@ -50,19 +50,12 @@ static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state)
         next_state = handler->on_entry_handler(fsm, fsm->m_config.context);
 
         // we increment the loop cycle count
-        if(fsm->m_config.max_recursion_depth)
-        {
-            is_loop_cycle_limit_reached = false;
-        }
-        else
-        {
-            ++loop_cycles_count;
-            is_loop_cycle_limit_reached = (loop_cycles_count > fsm->m_config.max_recursion_depth);
-        }
+        ++transitions_count;
+        is_transition_limit_reached = (transitions_count >= fsm->m_config.max_transition_count);
 
     }
 
-    return (is_loop_cycle_limit_reached) ? ERR_TIMEOUT : ERR_NONE;
+    return (is_transition_limit_reached) ? ERR_TIMEOUT : ERR_NONE;
 
 }
 
@@ -74,6 +67,8 @@ static error_t _validate_config(simple_fsm_config_t const * config)
 {
     if (config->state_delegates == NULL) return ERR_NULL_POINTER;
     if (config->state_count == 0) return ERR_INVALID_ARG;
+    if (config->max_transition_count == 0) return ERR_INVALID_ARG;
+    if (config->initial_state >= config->state_count) return ERR_INVALID_ARG;
     for (size_t idx = 0; (idx < config->state_count); ++idx)
     {
         if (config->state_delegates[idx].on_entry_handler == NULL) return ERR_NULL_POINTER;
@@ -119,7 +114,7 @@ error_t simple_fsm_start(simple_fsm_t * fsm)
 {
     if (fsm == NULL) return ERR_NULL_POINTER;
     if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
-    simple_fsm_state_delegates_t * handler;
+    simple_fsm_state_delegates_t const * handler;
     error_t ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);
     if (ret != ERR_NONE) return ret;
     size_t next_state = handler->on_entry_handler(fsm, fsm->m_config.context);
@@ -130,7 +125,7 @@ error_t simple_fsm_on_event(simple_fsm_t * fsm, void const * event)
 {
     if (fsm == NULL) return ERR_NULL_POINTER;
     if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
-    simple_fsm_state_delegates_t * handler;
+    simple_fsm_state_delegates_t const * handler;
     error_t ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);
     if (ret != ERR_NONE) return ret;
     size_t next_state = handler->on_event_handler(fsm, event, fsm->m_config.context);

@@ -2,7 +2,7 @@ set(C_EMB_MODULE_NAME simple_fsm)
 
 set(C_EMB_MODULE_SOURCES src/simple_fsm.c)
 set(C_EMB_MODULE_LINKS error_codes)
-set(C_EMB_MODULE_TEST_SOURCES test/test_simple_fsm.c)
+set(C_EMB_MODULE_TEST_SOURCES test/test_simple_fsm.c test/test_simple_fsm_mock_fsm.c)
 set(C_EMB_MODULE_TEST_RUNNER_SOURCES test_runner/test_simple_fsm_main.c)
 
 add_library(${C_EMB_MODULE_NAME} STATIC)
