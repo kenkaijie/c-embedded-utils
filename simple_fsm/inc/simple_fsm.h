@@ -61,10 +61,10 @@ struct s_simple_fsm {
  *  @brief  Returns the current state of the fsm
  * 
  *  @param[in]  fsm - the fsm
- *  @param[out]  state - the state, only valid to use if function returns ERR_NONE
+ *  @param[out]  state - the state, only valid to use if function returns ERR_NONE.
  *                  
  *  @returns    ERR_NONE - get success
- *              ERR_NULL_POINTER - a null pointer was found within
+ *              ERR_NULL_POINTER - a null pointer was found
  *              ERR_NOT_INITIALISED - fsm not initialised, state will not have any meaning
  */
 error_t simple_fsm_get_current_state(simple_fsm_t * fsm, size_t * state);
@@ -76,7 +76,7 @@ error_t simple_fsm_get_current_state(simple_fsm_t * fsm, size_t * state);
  *  @param[in]  config - the configuration for this fsm
  * 
  *  @returns    ERR_NONE - success
- *              ERR_NULL_POINTER - a null pointer was found within
+ *              ERR_NULL_POINTER - a null pointer was found
  *              ERR_INVALID_ARG - Config was invalid (if a unexpected NULL was found, returns ERR_NULL_POINTER instead)
  */
 error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config);
@@ -88,7 +88,7 @@ error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config);
  *  @param[in]  fsm - the fsm
  * 
  *  @returns    ERR_NONE - success  
- *              ERR_NULL_POINTER - a null pointer was found within         
+ *              ERR_NULL_POINTER - a null pointer was found        
  */
 error_t simple_fsm_deinit(simple_fsm_t * fsm);
 
@@ -103,7 +103,7 @@ error_t simple_fsm_deinit(simple_fsm_t * fsm);
  *  @returns    ERR_NONE - success
  *              ERR_NOT_INITIALISED - fsm not initialised
  *              ERR_TIMEOUT - Max transitions reached, FSM may be in an unknown state and should be reset. (Something bad happened)
- *              ERR_NULL_POINTER - a null pointer was found within
+ *              ERR_NULL_POINTER - a null pointer was found
  *              ERR_OUT_OF_BOUNDS - a state requested a state outside of the bounds of the defined state machine
  */
 error_t simple_fsm_start(simple_fsm_t * fsm);
@@ -119,7 +119,7 @@ error_t simple_fsm_start(simple_fsm_t * fsm);
  *  @returns    ERR_NONE - Everything went well
  *              ERR_NOT_INITIALISED - fsm was not initialised
  *              ERR_TIMEOUT - Max transitions reached, FSM may be in an unknown state and should be reset. (Something bad happened)
- *              ERR_NULL_POINTER - a null pointer was found within
+ *              ERR_NULL_POINTER - a null pointer was found
  *              ERR_OUT_OF_BOUNDS - a state requested a state outside of the bounds of the defined state machine
  */
 error_t simple_fsm_on_event(simple_fsm_t * fsm, void const * event);
