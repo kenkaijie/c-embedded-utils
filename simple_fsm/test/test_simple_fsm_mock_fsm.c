@@ -14,7 +14,7 @@ size_t state_a_on_entry(simple_fsm_t * fsm, void * context)
     return mock();
 }
 
-size_t state_a_on_event(simple_fsm_t * fsm, void const * event, void * context)
+size_t state_a_on_event(simple_fsm_t * fsm, state_event_t const * event, void * context)
 {
     function_called();
     check_expected_ptr(fsm);
@@ -39,7 +39,7 @@ size_t state_b_on_entry(simple_fsm_t * fsm, void * context)
     return mock();
 }
 
-size_t state_b_on_event(simple_fsm_t * fsm, void const * event, void * context)
+size_t state_b_on_event(simple_fsm_t * fsm, state_event_t const * event, void * context)
 {
     function_called();
     check_expected_ptr(fsm);
@@ -64,7 +64,7 @@ size_t state_c_on_entry(simple_fsm_t * fsm, void * context)
     return mock();
 }
 
-size_t state_c_on_event(simple_fsm_t * fsm, void const * event, void * context)
+size_t state_c_on_event(simple_fsm_t * fsm, state_event_t const * event, void * context)
 {
     function_called();
     check_expected_ptr(fsm);

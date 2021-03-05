@@ -49,10 +49,9 @@ static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state)
         if (ret != ERR_NONE) return ret;
         next_state = handler->on_entry_handler(fsm, fsm->m_config.context);
 
-        // we increment the loop cycle count
+        // we increment the loop cycle count (this loop is a sinlge transition)
         ++transitions_count;
         is_transition_limit_reached = (transitions_count >= fsm->m_config.max_transition_count);
-
     }
 
     return (is_transition_limit_reached) ? ERR_TIMEOUT : ERR_NONE;
@@ -124,6 +123,7 @@ error_t simple_fsm_start(simple_fsm_t * fsm)
 error_t simple_fsm_on_event(simple_fsm_t * fsm, void const * event)
 {
     if (fsm == NULL) return ERR_NULL_POINTER;
+    if (event == NULL) return ERR_NULL_POINTER;
     if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
     simple_fsm_state_delegates_t const * handler;
     error_t ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);

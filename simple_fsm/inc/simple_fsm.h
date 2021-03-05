@@ -114,7 +114,7 @@ error_t simple_fsm_start(simple_fsm_t * fsm);
  *  @note   Note this function may transition MANY states depending on the FSM provided. Limited by the FSM's max transition setting.
  * 
  *  @param[in]  fsm - the fsm
- *  @param[in]  event - the event to pass through as a pointer, can be NULL
+ *  @param[in]  event - the event to pass through as a pointer
  * 
  *  @returns    ERR_NONE - Everything went well
  *              ERR_NOT_INITIALISED - fsm was not initialised

@@ -17,15 +17,16 @@ enum e_simple_states
     SIMPLE_STATE_COUNT
 };
 
+typedef uint32_t state_event_t;
+
 size_t state_a_on_entry(simple_fsm_t * fsm, void * context);
-size_t state_a_on_event(simple_fsm_t * fsm, void const * event, void * context);
+size_t state_a_on_event(simple_fsm_t * fsm, state_event_t const * event, void * context);
 size_t state_a_on_exit(simple_fsm_t * fsm, void * context);
 
 size_t state_b_on_entry(simple_fsm_t * fsm, void * context);
-size_t state_b_on_event(simple_fsm_t * fsm, void const * event, void * context);
+size_t state_b_on_event(simple_fsm_t * fsm, state_event_t const * event, void * context);
 size_t state_b_on_exit(simple_fsm_t * fsm, void * context);
 
 size_t state_c_on_entry(simple_fsm_t * fsm, void * context);
-size_t state_c_on_event(simple_fsm_t * fsm, void const * event, void * context);
+size_t state_c_on_event(simple_fsm_t * fsm, state_event_t const * event, void * context);
 size_t state_c_on_exit(simple_fsm_t * fsm, void * context);
-
