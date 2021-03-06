@@ -31,3 +31,15 @@ C_EMB_UTILS_CFG_PRODUCE_UNIT_TESTS - enabling this will add the unit test execut
 
 ### CMake Targets
 Each module here provides a target for the specific component. All components provide a target, as well as a test target if tests are to be run on an embedded system.
+
+
+## Generate Targets
+To generate targets, we use gcovr with the following command (performed within the build folder)
+
+Gcovr can be installed using `pip install gcovr`.
+
+```
+gcovr -r .. . --html --html-details -o example-html-details.html --exclude-directories=".*\/extern\/.*"
+```
+
+This produces a html report for the system. It excludes generating coverage for extern libraries.

@@ -340,6 +340,11 @@ static void test_on_event_transitions(void ** state)
 
     ret = simple_fsm_on_event(&fsm, &event);
     assert_int_equal(ERR_NONE, ret);
+
+    size_t final_state;
+    ret = simple_fsm_get_current_state(&fsm, &final_state);
+    assert_int_equal(ERR_NONE, ret);
+    assert_int_equal(SIMPLE_STATE_C, final_state);
 }
 
 /**
@@ -352,29 +357,30 @@ static void test_looped_transitions(void ** state)
     error_t ret;
     simple_fsm_t fsm;
     simple_fsm_config_t fsm_config = config;
+    fsm_config.initial_state = SIMPLE_STATE_B;
     state_event_t event = 0xDEADBEEF;
 
     fsm_config.max_transition_count = (cycles * 2) + 1; // we cap the number of transitions (+1 for the initial transition into state B)
 
-    _setup_on_entry_exit_mock_with_count(state_a_on_entry, SIMPLE_STATE_A, &fsm, fsm_config.context, 1);
-    _setup_on_event_mock_with_count(state_a_on_event, SIMPLE_STATE_B, &fsm, &event, fsm_config.context, 1);
-    _setup_on_entry_exit_mock_with_count(state_a_on_exit, SIMPLE_STATE_A, &fsm, fsm_config.context, 1);
-    _setup_on_entry_exit_mock_with_count(state_b_on_entry, SIMPLE_STATE_C, &fsm, fsm_config.context, cycles + 1);
-    _setup_on_entry_exit_mock_with_count(state_b_on_exit, SIMPLE_STATE_B, &fsm, fsm_config.context, cycles);
-    _setup_on_entry_exit_mock_with_count(state_c_on_entry, SIMPLE_STATE_B, &fsm, fsm_config.context, cycles);
+    _setup_on_entry_exit_mock_with_count(state_b_on_entry, SIMPLE_STATE_B, &fsm, fsm_config.context, 1);
+    _setup_on_event_mock_with_count(state_b_on_event, SIMPLE_STATE_A, &fsm, &event, fsm_config.context, 1);
+    _setup_on_entry_exit_mock_with_count(state_b_on_exit, SIMPLE_STATE_B, &fsm, fsm_config.context, 1);
+    _setup_on_entry_exit_mock_with_count(state_a_on_entry, SIMPLE_STATE_C, &fsm, fsm_config.context, cycles + 1);
+    _setup_on_entry_exit_mock_with_count(state_a_on_exit, SIMPLE_STATE_A, &fsm, fsm_config.context, cycles);
+    _setup_on_entry_exit_mock_with_count(state_c_on_entry, SIMPLE_STATE_A, &fsm, fsm_config.context, cycles);
     _setup_on_entry_exit_mock_with_count(state_c_on_exit, SIMPLE_STATE_C, &fsm, fsm_config.context, cycles);
 
     // call order
-    expect_function_call(state_a_on_entry);
-    expect_function_call(state_a_on_event);
-    expect_function_call(state_a_on_exit);
     expect_function_call(state_b_on_entry);
+    expect_function_call(state_b_on_event);
+    expect_function_call(state_b_on_exit);
+    expect_function_call(state_a_on_entry);
     for (size_t idx = 0; idx < cycles; ++idx)
     {
-        expect_function_call(state_b_on_exit);
+        expect_function_call(state_a_on_exit);
         expect_function_call(state_c_on_entry);
         expect_function_call(state_c_on_exit);
-        expect_function_call(state_b_on_entry);
+        expect_function_call(state_a_on_entry);
     }
 
     ret = simple_fsm_init(&fsm, &fsm_config);
@@ -385,6 +391,40 @@ static void test_looped_transitions(void ** state)
 
     ret = simple_fsm_on_event(&fsm, &event);
     assert_int_equal(ERR_TIMEOUT, ret);
+}
+
+/**
+ *  @brief  Tests that the request being the same will remain in the same state.
+ */
+static void test_event_stays_same_state(void ** state)
+{
+    size_t cycles = 5;
+    error_t ret;
+    simple_fsm_t fsm;
+    simple_fsm_config_t fsm_config = config;
+    fsm_config.initial_state = SIMPLE_STATE_C;
+    state_event_t event = 0xDEADBEEF;
+
+    _setup_on_entry_exit_mock_with_count(state_c_on_entry, SIMPLE_STATE_C, &fsm, fsm_config.context, 1);
+    _setup_on_event_mock_with_count(state_c_on_event, SIMPLE_STATE_C, &fsm, &event, fsm_config.context, 1);
+
+    // call order
+    expect_function_call(state_c_on_entry);
+    expect_function_call(state_c_on_event);
+
+    ret = simple_fsm_init(&fsm, &fsm_config);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_start(&fsm);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_on_event(&fsm, &event);
+    assert_int_equal(ERR_NONE, ret);
+
+    size_t final_state;
+    ret = simple_fsm_get_current_state(&fsm, &final_state);
+    assert_int_equal(ERR_NONE, ret);
+    assert_int_equal(SIMPLE_STATE_C, final_state);
 }
 
 int test_simple_fsm_run_tests(void) {
@@ -401,6 +441,7 @@ int test_simple_fsm_run_tests(void) {
         cmocka_unit_test(test_looped_start),
         cmocka_unit_test(test_on_event_transitions),
         cmocka_unit_test(test_looped_transitions),
+        cmocka_unit_test(test_event_stays_same_state),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
