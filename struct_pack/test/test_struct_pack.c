@@ -123,6 +123,27 @@ static void test_le_u32(void ** state)
     assert_int_equal(expected_value, actual_value);
 }
 
+static void test_le_u64(void ** state)
+{
+    packable_t packer = {
+        .encode = (packable_encode_handler_t)le_pack_u64,
+        .decode = (packable_decode_handler_t)le_unpack_u64,
+    };
+    size_t expected_type_size = PACK_SIZE_UINT64_T;
+    uint64_t expected_value = 0x12345678ABCDEF92UL;
+    uint64_t actual_value = expected_value - 1;
+    size_t offset = 3;
+    uint8_t actual_buffer[15] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    uint8_t expected_buffer[sizeof(actual_buffer)] =  {0xFF, 0xFF, 0xFF, 0x92, 0xEF, 0xCD, 0xAB, 0x78, 0x56, 0x34, 0x12, 0xFF, 0xFF, 0xFF, 0xFF};
+    size_t buffer_size = sizeof(actual_buffer);
+    size_t bytes_consumed = 0;
+
+    _test_le_test_rig(&packer, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
+    assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
+    assert_int_equal(expected_value, actual_value);
+}
+
+
 static void test_le_s8(void ** state)
 {
     packable_t packer = {
@@ -175,6 +196,26 @@ static void test_le_s32(void ** state)
     size_t offset = 3;
     uint8_t actual_buffer[9] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] = {0xFF, 0xFF, 0xFF, 0x34, 0x12, 0xCD, 0xFA, 0xFF, 0xFF};
+    size_t buffer_size = sizeof(actual_buffer);
+    size_t bytes_consumed = 0;
+
+    _test_le_test_rig(&packer, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
+    assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
+    assert_int_equal(expected_value, actual_value);
+}
+
+static void test_le_s64(void ** state)
+{
+    packable_t packer = {
+        .encode = (packable_encode_handler_t)le_pack_s64,
+        .decode = (packable_decode_handler_t)le_unpack_s64,
+    };
+    size_t expected_type_size = PACK_SIZE_INT64_T;
+    int64_t expected_value = (int64_t)0x12345678ABCDEF92UL;
+    int64_t actual_value = expected_value - 1;
+    size_t offset = 3;
+    uint8_t actual_buffer[15] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    uint8_t expected_buffer[sizeof(actual_buffer)] =  {0xFF, 0xFF, 0xFF, 0x92, 0xEF, 0xCD, 0xAB, 0x78, 0x56, 0x34, 0x12, 0xFF, 0xFF, 0xFF, 0xFF};
     size_t buffer_size = sizeof(actual_buffer);
     size_t bytes_consumed = 0;
 
@@ -261,9 +302,11 @@ int test_struct_pack_run_tests(void) {
         cmocka_unit_test(test_le_u8),
         cmocka_unit_test(test_le_u16),
         cmocka_unit_test(test_le_u32),
+        cmocka_unit_test(test_le_u64),
         cmocka_unit_test(test_le_s8),
         cmocka_unit_test(test_le_s16),
         cmocka_unit_test(test_le_s32),
+        cmocka_unit_test(test_le_s64),
         cmocka_unit_test(test_le_bool),
         cmocka_unit_test(test_le_raw),
         cmocka_unit_test(test_vector3_le_example),
