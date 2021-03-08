@@ -4,4 +4,4 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y cmake python3-pip
 
 RUN pip3 install gcovr
 
-
+ENTRYPOINT [ "/bin/bash", "-c" ]
