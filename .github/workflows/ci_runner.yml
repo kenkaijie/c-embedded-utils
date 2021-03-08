@@ -18,15 +18,16 @@ jobs:
       # We'll use this as our working directory for all subsequent commands
       run: ${{github.workspace}}/build_scripts/build.sh
 
-    - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v2
       with:
-        files: ./build_temp/Testing/**/*.xml
+        report_paths: 'build_temp/Testing/**/Test.xml'
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Publish Code Coverage
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
-        files: ./build_temp/code_coverage.xml # optional
+        files: ${{github.workspace}}/build_temp/code_coverage.xml # optional
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
