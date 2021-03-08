@@ -36,7 +36,7 @@ To generate targets, we use gcovr with the following command (performed within t
 Gcovr can be installed using `pip install gcovr`.
 
 ```
-gcovr -r .. . --xml-pretty  --exclude-directories=".*\/extern\/.*"
+gcovr -r .. . --xml-pretty  --exclude-directories=".*\/extern\/.* > coverage_report.xml"
 ```
 
 This produces a html report for the system. It excludes generating coverage for extern libraries.
