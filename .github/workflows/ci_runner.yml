@@ -6,7 +6,7 @@ env:
   PROJECT_ROOT: ${{github.workspace}}
 
 jobs:
-  build:
+  BuildAndTest:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -20,6 +20,13 @@ jobs:
 
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
-      if: always()
       with:
-        files: build_temp/Testing/**/*.xml
+        files: ./build_temp/Testing/**/*.xml
+
+    - name: Publish Code Coverage
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+        files: ./build_temp/code_coverage.xml # optional
+        fail_ci_if_error: true # optional (default = false)
+        verbose: true # optional (default = false)
