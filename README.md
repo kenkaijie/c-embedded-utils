@@ -1,6 +1,7 @@
 # Embedded Utils For C
 
 [![codecov](https://codecov.io/gh/kenkaijie/c-embedded-utils/branch/master/graph/badge.svg?token=WY02IOEUE0)](https://codecov.io/gh/kenkaijie/c-embedded-utils)
+[![build](https://github.com/kenkaijie/c-embedded-utils/actions/workflows/ci_runner.yml/badge.svg?branch=master)](https://github.com/kenkaijie/c-embedded-utils/actions/workflows/ci_runner.yml)
 
 Just a collection of data structures and common architectural implementations I find myself using again and again on embedded systems. This repository just provides some additional rigor over the entire system. Providing a fully tested library.
 
