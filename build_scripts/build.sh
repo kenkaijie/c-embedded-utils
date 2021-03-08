@@ -1,3 +1,4 @@
+#!/bin/sh
 set -e
 
 docker build -t c-embedded-utils -f ${PROJECT_ROOT}/Dockerfile ${PROJECT_ROOT}
