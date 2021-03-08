@@ -1,5 +1,7 @@
 # Embedded Utils For C
 
+[![codecov](https://codecov.io/gh/kenkaijie/c-embedded-utils/branch/master/graph/badge.svg?token=WY02IOEUE0)](https://codecov.io/gh/kenkaijie/c-embedded-utils)
+
 Just a collection of data structures and common architectural implementations I find myself using again and again on embedded systems. This repository just provides some additional rigor over the entire system. Providing a fully tested library.
 
 # Compiling
@@ -36,7 +38,7 @@ To generate targets, we use gcovr with the following command (performed within t
 Gcovr can be installed using `pip install gcovr`.
 
 ```
-gcovr -r .. . --html --html-details -o example-html-details.html --exclude-directories=".*\/extern\/.*"
+gcovr -r .. . --xml-pretty  --exclude-directories=".*\/extern\/.* > coverage_report.xml"
 ```
 
 This produces a html report for the system. It excludes generating coverage for extern libraries.

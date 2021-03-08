@@ -6,7 +6,7 @@ target_link_libraries(struct_pack cemd_global_options)
 add_library(test_struct_pack STATIC)
 target_include_directories(test_struct_pack PUBLIC test)
 target_sources(test_struct_pack PRIVATE test/test_struct_pack.c test/test_vector3_example.c)
-target_link_libraries(test_struct_pack struct_pack cemb_cmocka cemd_global_options)
+target_link_libraries(test_struct_pack struct_pack cmocka cemd_global_options)
 
 if (C_EMB_UTILS_CFG_PRODUCE_UNIT_TESTS)
     enable_testing()
