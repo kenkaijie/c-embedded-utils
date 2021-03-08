@@ -9,7 +9,7 @@ docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="/usr/project/
 
 # Test
 
-docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="/usr/project/" c-embedded-utils "cd /usr/project/build_temp && ctest -T Test -V --no-compress-output"
+docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="/usr/project/" c-embedded-utils "cd /usr/project/build_temp && ctest -T Test -V --no-compress-output --output-on-failure"
 
 # Report
 
