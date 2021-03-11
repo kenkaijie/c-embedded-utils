@@ -1,11 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-
-#include "error_codes.h"
-
 /**
  * @brief   A simple finite state machine runner. Uses functional callbacks to perform the transitions. This simple state machine only supports
  *          on entry/on exit and a special on event.
@@ -22,6 +16,13 @@
  *          This framework does not stop mistakes. Ensure that each state machine's entry and exit error conditions results in the same error state. The engine
  *          transitions to the newest received state.
  */
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+
+#include "error_codes.h"
+
 typedef struct s_simple_fsm_state_delegates simple_fsm_state_delegates_t;
 typedef struct s_simple_fsm simple_fsm_t;
 typedef struct s_simple_fsm_config simple_fsm_config_t;

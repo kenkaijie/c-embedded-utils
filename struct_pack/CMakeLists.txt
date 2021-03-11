@@ -1,17 +1,13 @@
-add_library(struct_pack STATIC)
-target_include_directories(struct_pack PUBLIC inc)
-target_sources(struct_pack PRIVATE src/struct_pack.c)
-target_link_libraries(struct_pack cemd_global_options)
+set(MODULE_NAME struct_pack)
 
-add_library(test_struct_pack STATIC)
-target_include_directories(test_struct_pack PUBLIC test)
-target_sources(test_struct_pack PRIVATE test/test_struct_pack.c test/test_vector3_example.c)
-target_link_libraries(test_struct_pack struct_pack cmocka cemd_global_options)
+set(MODULE_SOURCES src/struct_pack.c)
+set(MODULE_LINKS "")
+set(MODULE_TEST_SOURCES test/test_struct_pack.c test/test_vector3_example.c)
+set(MODULE_TEST_RUNNER_SOURCES test_runner/test_struct_pack_main.c)
 
-if (C_EMB_UTILS_CFG_PRODUCE_UNIT_TESTS)
-    enable_testing()
-    add_executable(test_struct_pack_main)
-    target_link_libraries(test_struct_pack_main test_struct_pack cemd_global_options)
-    target_sources(test_struct_pack_main PRIVATE test_runner/test_struct_pack_main.c)
-    add_test(test_struct_pack test_struct_pack_main)
-endif()
+add_c_embedded_module(
+    NAME ${MODULE_NAME} 
+    SOURCES ${MODULE_SOURCES} 
+    LINKS ${MODULE_LINKS} 
+    TEST_SOURCES ${MODULE_TEST_SOURCES} 
+    TEST_RUNNER_SOURCES ${MODULE_TEST_RUNNER_SOURCES})

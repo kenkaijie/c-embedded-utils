@@ -1,7 +1,10 @@
-/**
- *  @brief  Structure packing for little and big endian. Provides interfacing prototypes for packable data structures.
- */
 #pragma once
+
+/**
+ * @brief   Structure packing for little and big endian. Provides interfacing prototypes for packable data structures.
+ * 
+ * @todo    Implement Big Endian
+ */
 
 #include <stdint.h>
 #include <string.h>
