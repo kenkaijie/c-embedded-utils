@@ -263,6 +263,7 @@ int test_static_pool_run_tests(void)
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_null_checks),
         cmocka_unit_test(test_token_out_of_bounds),
+        cmocka_unit_test(test_invalid_configs),
         cmocka_unit_test(test_deinit_invalid_states),
         cmocka_unit_test(test_allocation_fills_and_unfills_correctly),
         cmocka_unit_test(test_deallocate_twice_fails),

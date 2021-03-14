@@ -30,11 +30,8 @@ static inline bool _is_token_in_bounds(static_pool_t * pool, size_t token)
 
 static inline bool _is_token_allocated(static_pool_t * pool, size_t token)
 {
-    if (_is_token_in_bounds(pool, token))
-    {
-        return (pool->m_config.metadata_buffer[token].allocated);
-    }
-    return false;
+    // note we don;t check bounds here, call _is_token_in_bounds first.
+    return (pool->m_config.metadata_buffer[token].allocated);
 }
 
 static inline error_t _validate_config(static_pool_config_t const * config)

@@ -40,6 +40,7 @@ static void test_interface_validation(void ** state)
     size_t unused_count = 0;
     void * object_pointer = NULL;
 
+    // just a shortcut for testing the interface for nulls.
     for (size_t idx = 0; idx < 4; ++idx)
     {
         object_pool_t interface_temp = interface;
@@ -56,8 +57,6 @@ static void test_interface_validation(void ** state)
                 break;
             case 3:
                 interface_temp.get_unused_count = NULL;
-                break;
-            default:
                 break;
         }
 
