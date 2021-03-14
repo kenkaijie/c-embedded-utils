@@ -150,6 +150,29 @@ static void test_deallocate(void ** state)
     assert_int_equal(ERR_NO_MEM, ret);
 }
 
+static void test_get_unused_count(void ** state)
+{
+    size_t unused_count = 0;
+    error_t ret;
+    object_pool_t interface;
+    void * context = (void *)0xDEADBEEF;
+
+    mock_object_pool_get_interface(&interface, context);
+
+    _setup_mock_object_pool_get_unused_count_with_count(context, &unused_count, ERR_NONE, 5, 1);
+    expect_function_call(mock_object_pool_get_unused_count);
+
+    ret = object_pool_get_unused_count(&interface, &unused_count);
+    assert_int_equal(ERR_NONE, ret);
+    assert_int_equal(5, unused_count);
+
+    _setup_mock_object_pool_get_unused_count_with_count(context, &unused_count, ERR_GENERIC_ERROR, unused_count, 1);
+    expect_function_call(mock_object_pool_get_unused_count);
+
+    ret = object_pool_get_unused_count(&interface, &unused_count);
+    assert_int_equal(ERR_GENERIC_ERROR, ret);
+}
+
 int test_object_pool_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
@@ -158,6 +181,7 @@ int test_object_pool_run_tests(void)
         cmocka_unit_test(test_allocation),
         cmocka_unit_test(test_fetch),
         cmocka_unit_test(test_deallocate),
+        cmocka_unit_test(test_get_unused_count),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
