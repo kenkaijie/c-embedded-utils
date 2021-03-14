@@ -71,7 +71,7 @@ struct s_simple_fsm {
 error_t simple_fsm_get_current_state(simple_fsm_t * fsm, size_t * state);
 
 /**
- *  @brief   Initialises the fsm based on config
+ *  @brief   Initialises the fsm based on config. If an already initialised fsm calls this, it will force a reset and may cause undefined behaviour.
  * 
  *  @param[in]  fsm - the fsm
  *  @param[in]  config - the configuration for this fsm
@@ -89,7 +89,7 @@ error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config);
  *  @param[in]  fsm - the fsm
  * 
  *  @returns    ERR_NONE - success  
- *              ERR_NULL_POINTER - a null pointer was found        
+ *              ERR_NULL_POINTER - a null pointer was found    
  */
 error_t simple_fsm_deinit(simple_fsm_t * fsm);
 

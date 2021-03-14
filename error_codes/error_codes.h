@@ -1,4 +1,7 @@
 #pragma once
+/**
+ *  @todo COnvert these to result codes, instead of error codes.
+ */ 
 
 #include <stdint.h>
 
@@ -13,6 +16,7 @@ enum e_error_codes
     ERR_TIMEOUT, /**< A timed request took longer than usual */
     ERR_OUT_OF_BOUNDS, /**< A requested value is not within the acceptable bounds (typically for arrays, or addressable values) */
     ERR_NULL_POINTER, /**< A null pointer was seen where it was not expected. */
+    ERR_NOOP, /**< Used to signal that an optionally triggered function did not do anything, not actually an error */
 };
 
 typedef uint32_t error_t;
