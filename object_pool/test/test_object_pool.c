@@ -41,28 +41,26 @@ static void test_interface_validation(void ** state)
     void * object_pointer = NULL;
 
     // just a shortcut for testing the interface for nulls.
-    for (size_t idx = 0; idx < 4; ++idx)
+    for (size_t cycle = 0; cycle < 4; ++cycle)
     {
         object_pool_t interface_temp = interface;
-        switch(idx)
+        if (cycle == 0)
         {
-            case 0:
-                interface_temp.allocate = NULL;
-                break;
-            case 1:
-                interface_temp.fetch = NULL;
-                break;
-            case 2:
-                interface_temp.deallocate = NULL;  
-                break;
-            case 3:
-                interface_temp.get_unused_count = NULL;
-                break;
+            interface_temp.allocate = NULL;
         }
-
-        ret = object_pool_allocate(&interface_temp, &token);
-        assert_int_equal(ERR_NULL_POINTER, ret);
-
+        else if (cycle == 1)
+        {
+            interface_temp.fetch = NULL;
+        }
+        else if (cycle == 2)
+        {
+            interface_temp.deallocate = NULL;  
+        }
+        else if (cycle == 3)
+        {
+            interface_temp.get_unused_count = NULL;
+        }
+        
         ret = object_pool_allocate(&interface_temp, &token);
         assert_int_equal(ERR_NULL_POINTER, ret);
 
