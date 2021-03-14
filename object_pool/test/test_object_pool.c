@@ -23,6 +23,70 @@ static void test_null_checks(void ** state)
     assert_int_equal(ERR_NULL_POINTER, ret);
 }
 
+static void test_interface_validation(void ** state)
+{
+    object_pool_t interface = {
+        .context = (void *)0xDEADBEEF,
+        .allocate = mock_object_pool_allocate,
+        .fetch = mock_object_pool_fetch,
+        .deallocate = mock_object_pool_deallocate,
+    };
+    error_t ret;
+    size_t token = OBJECT_POOL_TOKEN_INVALID;
+    void * object_pointer = NULL;
+
+    // nulled allocate function
+    interface.allocate = NULL;
+
+    ret = object_pool_allocate(&interface, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_allocate(&interface, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_fetch(&interface, token, &object_pointer);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_deallocate(&interface, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+    interface.allocate = mock_object_pool_allocate;
+
+    // nulled allocate function
+    interface.fetch = NULL;
+
+    ret = object_pool_allocate(&interface, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_allocate(&interface, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_fetch(&interface, token, &object_pointer);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_deallocate(&interface, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    interface.fetch = mock_object_pool_fetch;
+
+    // nulled allocate function
+    interface.deallocate = NULL;
+
+    ret = object_pool_allocate(&interface, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_allocate(&interface, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_fetch(&interface, token, &object_pointer);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_deallocate(&interface, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    interface.deallocate = mock_object_pool_deallocate;
+
+}
+
 static void test_allocation(void ** state)
 {
     size_t token = 0;
@@ -97,6 +161,7 @@ int test_object_pool_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_null_checks),
+        cmocka_unit_test(test_interface_validation),
         cmocka_unit_test(test_allocation),
         cmocka_unit_test(test_fetch),
         cmocka_unit_test(test_deallocate),
