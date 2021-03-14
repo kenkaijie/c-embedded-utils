@@ -85,12 +85,15 @@ error_t static_pool_allocate(static_pool_t * pool, size_t * token);
 error_t static_pool_fetch(static_pool_t * pool, size_t token, void ** object_pointer);
 
 /**
- *  @brief  Frees an object for reuse in the future. Note all objects will be zeroed when freed.
+ *  @brief  Frees an object for reuse in the future. Note objects may not be zeroed when freed.
  * 
  *  @param[in] pool - The pointer to the static pool object
  *  @param[inout] token - The token used to free. After calling this on a token, the token is set back to the invalid token.
  * 
  *  @returns    ERR_NONE - A slot has been allocated, the token represents an object within the pool.
- *              ERR_NOOP - The token is invalid, no freeing
+ *              ERR_NOOP - The token is invalid, no freeing.
+ *              ERR_NULL_POINTER - A null pointer was found
+ *              ERR_NOT_INITIALISED - The pool has not been initialised.
+ *              ERR_OUT_OF_BOUNDS - The token provided is out of bounds.
  */
 error_t static_pool_deallocate(static_pool_t * pool, size_t * token);

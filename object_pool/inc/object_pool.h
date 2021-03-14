@@ -80,6 +80,8 @@ inline error_t object_pool_fetch(object_pool_t const * interface, size_t token, 
  *  @param[inout] token - The token used to free. After calling this on a token, the token is set back to the invalid token.
  * 
  *  @returns    ERR_NONE - A slot has been allocated, the token represents an object within the pool.
+ *              ERR_NULL_POINTER - A null pointer was found
+ *              ERR_NOT_INITIALISED - The pool has not been initialised.
  *              ERR_NOOP - The token is invalid, no freeing
  */
 inline error_t object_pool_deallocate(object_pool_t const * interface, size_t * token)
