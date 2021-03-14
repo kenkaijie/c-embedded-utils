@@ -18,9 +18,7 @@
 void mock_object_pool_get_interface(object_pool_t * interface, void * context);
 
 error_t mock_object_pool_allocate(void * pool, size_t * token);
-
 error_t mock_object_pool_fetch(void * pool, size_t token, void ** object_pointer);
-
 error_t mock_object_pool_deallocate(void * pool, size_t * token);
 
 #define _setup_mock_object_pool_allocate_with_count(with_pool_arg, with_token_arg, returns_val, sets_token_arg, num_times) \

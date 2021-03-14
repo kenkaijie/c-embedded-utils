@@ -7,11 +7,6 @@ static inline size_t _object_index_to_buffer_index(static_pool_t * pool, size_t 
     return object_index * pool->m_config.object_size;
 }
 
-static inline size_t _buffer_index_to_object_index(static_pool_t * pool, size_t buffer_index)
-{
-    return buffer_index / pool->m_config.object_size;
-}
-
 static inline void _lock_if_needed(static_pool_t * pool)
 {
     if (pool->m_config.use_lock)
@@ -72,7 +67,7 @@ error_t static_pool_init(static_pool_t * pool, static_pool_config_t const * conf
 
     pool->m_initialised = true;
     pool->m_config = *config;
-
+    pool->m_slots_remaining = config->object_count;
     // initialise all the metadata and other fields
     for (size_t idx=0; idx < pool->m_config.object_count; ++idx)
     {
@@ -105,6 +100,7 @@ error_t static_pool_allocate(static_pool_t * pool, size_t * token)
         {
             pool->m_config.metadata_buffer[idx].allocated = true;
             object_index = idx;
+            pool->m_slots_remaining--;
             break;
         }
     }
@@ -125,9 +121,9 @@ error_t static_pool_fetch(static_pool_t * pool, size_t token, void ** object_poi
     error_t ret;
     if ((pool == NULL) || (object_pointer == NULL)) return ERR_NULL_POINTER;
     if (!pool->m_initialised) return ERR_NOT_INITIALISED;
-    if (_is_token_in_bounds(pool, token)) return ERR_OUT_OF_BOUNDS;
+    if (!_is_token_in_bounds(pool, token)) return ERR_OUT_OF_BOUNDS;
 
-    if (pool->m_config.metadata_buffer[token].allocated)
+    if (_is_token_allocated(pool, token))
     {
         *object_pointer = &pool->m_config.buffer[_object_index_to_buffer_index(pool, token)];
         ret = ERR_NONE;
@@ -145,22 +141,40 @@ error_t static_pool_deallocate(static_pool_t * pool, size_t * token)
     error_t ret = ERR_NOOP;
     if ((pool == NULL) || (token == NULL)) return ERR_NULL_POINTER;
     if (!pool->m_initialised) return ERR_NOT_INITIALISED;
-    if (_is_token_in_bounds(pool, *token)) return ERR_OUT_OF_BOUNDS;
+    if (!_is_token_in_bounds(pool, *token)) return ERR_OUT_OF_BOUNDS;
 
     if (*token != OBJECT_POOL_TOKEN_INVALID)
     {
-        _lock_if_needed(pool);
+        if (_is_token_allocated(pool, *token))
+        {
+            _lock_if_needed(pool);
 
-        size_t object_idx = *token;
-        size_t buffer_idx = _object_index_to_buffer_index(pool, *token);
+            size_t object_idx = *token;
+            size_t buffer_idx = _object_index_to_buffer_index(pool, *token);
 
-        pool->m_config.metadata_buffer[object_idx].allocated = false;
-        memset(&pool->m_config.buffer[buffer_idx], 0, pool->m_config.object_size);
-        *token = OBJECT_POOL_TOKEN_INVALID;
-
-        _unlock_if_needed(pool);
-        
-        ret = ERR_NONE;
+            pool->m_config.metadata_buffer[object_idx].allocated = false;
+            memset(&pool->m_config.buffer[buffer_idx], 0, pool->m_config.object_size);
+            *token = OBJECT_POOL_TOKEN_INVALID;
+            pool->m_slots_remaining++;
+            _unlock_if_needed(pool);
+            
+            ret = ERR_NONE;
+        }
+        else
+        {
+            ret = ERR_INVALID_STATE;
+        }
     }
+    return ret;
+}
+
+error_t static_pool_get_unused_count(static_pool_t * pool, size_t * unused_count)
+{
+    error_t ret = ERR_NONE;
+    if ((pool == NULL) || (unused_count == NULL)) return ERR_NULL_POINTER;
+    if (!pool->m_initialised) return ERR_NOT_INITIALISED;
+
+    *unused_count = pool->m_slots_remaining;
+
     return ret;
 }

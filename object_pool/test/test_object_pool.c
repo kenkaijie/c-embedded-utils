@@ -11,6 +11,7 @@ static void test_null_checks(void ** state)
 {
     error_t ret;
     size_t token = OBJECT_POOL_TOKEN_INVALID;
+    size_t unused_count = 0;
     void * object_pointer = NULL;
 
     ret = object_pool_allocate(NULL, &token);
@@ -20,6 +21,9 @@ static void test_null_checks(void ** state)
     assert_int_equal(ERR_NULL_POINTER, ret);
 
     ret = object_pool_deallocate(NULL, &token);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
+    ret = object_pool_get_unused_count(NULL, &unused_count);
     assert_int_equal(ERR_NULL_POINTER, ret);
 }
 
@@ -31,59 +35,48 @@ static void test_interface_validation(void ** state)
         .fetch = mock_object_pool_fetch,
         .deallocate = mock_object_pool_deallocate,
     };
-    error_t ret;
+    object_pool_t interface_temp = interface; 
+    error_t ret = ERR_NONE;
     size_t token = OBJECT_POOL_TOKEN_INVALID;
+    size_t unused_count = 0;
     void * object_pointer = NULL;
 
-    // nulled allocate function
-    interface.allocate = NULL;
+    for (size_t idx = 0; idx < 4; ++idx)
+    {
+        interface_temp = interface;
+        switch(idx)
+        {
+            case 0:
+                interface.allocate = NULL;
+                break;
+            case 1:
+                interface.fetch = NULL;
+                break;
+            case 2:
+                interface.deallocate = NULL;  
+                break;
+            case 3:
+                interface.get_unused_count = NULL;
+                break;
+            default:
+                break;
+        }
 
-    ret = object_pool_allocate(&interface, &token);
-    assert_int_equal(ERR_NULL_POINTER, ret);
+        ret = object_pool_allocate(&interface, &token);
+        assert_int_equal(ERR_NULL_POINTER, ret);
 
-    ret = object_pool_allocate(&interface, &token);
-    assert_int_equal(ERR_NULL_POINTER, ret);
+        ret = object_pool_allocate(&interface, &token);
+        assert_int_equal(ERR_NULL_POINTER, ret);
 
-    ret = object_pool_fetch(&interface, token, &object_pointer);
-    assert_int_equal(ERR_NULL_POINTER, ret);
+        ret = object_pool_fetch(&interface, token, &object_pointer);
+        assert_int_equal(ERR_NULL_POINTER, ret);
 
-    ret = object_pool_deallocate(&interface, &token);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-    interface.allocate = mock_object_pool_allocate;
+        ret = object_pool_deallocate(&interface, &token);
+        assert_int_equal(ERR_NULL_POINTER, ret);
 
-    // nulled allocate function
-    interface.fetch = NULL;
-
-    ret = object_pool_allocate(&interface, &token);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = object_pool_allocate(&interface, &token);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = object_pool_fetch(&interface, token, &object_pointer);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = object_pool_deallocate(&interface, &token);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    interface.fetch = mock_object_pool_fetch;
-
-    // nulled allocate function
-    interface.deallocate = NULL;
-
-    ret = object_pool_allocate(&interface, &token);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = object_pool_allocate(&interface, &token);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = object_pool_fetch(&interface, token, &object_pointer);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = object_pool_deallocate(&interface, &token);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    interface.deallocate = mock_object_pool_deallocate;
+        ret = object_pool_get_unused_count(&interface, &unused_count);
+        assert_int_equal(ERR_NULL_POINTER, ret);
+    }
 
 }
 

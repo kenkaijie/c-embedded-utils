@@ -34,6 +34,7 @@ struct s_static_pool_config
 struct s_static_pool
 {
     bool m_initialised;
+    size_t m_slots_remaining;
     static_pool_config_t m_config;
 };
 
@@ -91,9 +92,22 @@ error_t static_pool_fetch(static_pool_t * pool, size_t token, void ** object_poi
  *  @param[inout] token - The token used to free. After calling this on a token, the token is set back to the invalid token.
  * 
  *  @returns    ERR_NONE - A slot has been allocated, the token represents an object within the pool.
- *              ERR_NOOP - The token is invalid, no freeing.
  *              ERR_NULL_POINTER - A null pointer was found
  *              ERR_NOT_INITIALISED - The pool has not been initialised.
+ *              ERR_NOOP - The token is invalid, no freeing.
  *              ERR_OUT_OF_BOUNDS - The token provided is out of bounds.
+ *              ERR_INVALID_STATE - Token provided points to an unallocated object.
  */
 error_t static_pool_deallocate(static_pool_t * pool, size_t * token);
+
+/**
+ *  @brief  Gets the number of remaining slots in the pool.
+ * 
+ *  @param[in] pool  - The pointer to the static pool object
+ *  @param[inout] unused_count - The number of unused 
+ * 
+ *  @returns    ERR_NONE - Success
+ *              ERR_NULL_POINTER - A null pointer was found
+ *              ERR_NOT_INITIALISED - The pool has not been initialised.
+ */
+error_t static_pool_get_unused_count(static_pool_t * pool, size_t * unused_count);
