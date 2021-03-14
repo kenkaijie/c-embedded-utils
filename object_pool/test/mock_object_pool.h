@@ -20,6 +20,7 @@ void mock_object_pool_get_interface(object_pool_t * interface, void * context);
 error_t mock_object_pool_allocate(void * pool, size_t * token);
 error_t mock_object_pool_fetch(void * pool, size_t token, void ** object_pointer);
 error_t mock_object_pool_deallocate(void * pool, size_t * token);
+error_t mock_object_pool_get_unused_count(void * pool, size_t * unused_count);
 
 #define _setup_mock_object_pool_allocate_with_count(with_pool_arg, with_token_arg, returns_val, sets_token_arg, num_times) \
 do {\
@@ -55,3 +56,13 @@ do {\
     } \
 } while(false)
 
+#define _setup_mock_object_pool_get_unused_count_with_count(with_pool_arg, with_unused_count_arg, returns_val, sets_unused_count_arg, num_times) \
+do {\
+    expect_value_count(mock_object_pool_get_unused_count, pool, (uintptr_t)with_pool_arg, num_times);\
+    expect_value_count(mock_object_pool_get_unused_count, unused_count, (uintptr_t)with_unused_count_arg, num_times);\
+    for (size_t idx = 0; idx < num_times; ++idx) \
+    { \
+        will_return(mock_object_pool_get_unused_count, sets_unused_count_arg); \
+        will_return(mock_object_pool_get_unused_count, returns_val); \
+    } \
+} while(false)
