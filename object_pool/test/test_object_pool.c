@@ -35,7 +35,6 @@ static void test_interface_validation(void ** state)
         .fetch = mock_object_pool_fetch,
         .deallocate = mock_object_pool_deallocate,
     };
-    object_pool_t interface_temp = interface; 
     error_t ret = ERR_NONE;
     size_t token = OBJECT_POOL_TOKEN_INVALID;
     size_t unused_count = 0;
@@ -43,38 +42,38 @@ static void test_interface_validation(void ** state)
 
     for (size_t idx = 0; idx < 4; ++idx)
     {
-        interface_temp = interface;
+        object_pool_t interface_temp = interface;
         switch(idx)
         {
             case 0:
-                interface.allocate = NULL;
+                interface_temp.allocate = NULL;
                 break;
             case 1:
-                interface.fetch = NULL;
+                interface_temp.fetch = NULL;
                 break;
             case 2:
-                interface.deallocate = NULL;  
+                interface_temp.deallocate = NULL;  
                 break;
             case 3:
-                interface.get_unused_count = NULL;
+                interface_temp.get_unused_count = NULL;
                 break;
             default:
                 break;
         }
 
-        ret = object_pool_allocate(&interface, &token);
+        ret = object_pool_allocate(&interface_temp, &token);
         assert_int_equal(ERR_NULL_POINTER, ret);
 
-        ret = object_pool_allocate(&interface, &token);
+        ret = object_pool_allocate(&interface_temp, &token);
         assert_int_equal(ERR_NULL_POINTER, ret);
 
-        ret = object_pool_fetch(&interface, token, &object_pointer);
+        ret = object_pool_fetch(&interface_temp, token, &object_pointer);
         assert_int_equal(ERR_NULL_POINTER, ret);
 
-        ret = object_pool_deallocate(&interface, &token);
+        ret = object_pool_deallocate(&interface_temp, &token);
         assert_int_equal(ERR_NULL_POINTER, ret);
 
-        ret = object_pool_get_unused_count(&interface, &unused_count);
+        ret = object_pool_get_unused_count(&interface_temp, &unused_count);
         assert_int_equal(ERR_NULL_POINTER, ret);
     }
 
