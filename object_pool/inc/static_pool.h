@@ -110,4 +110,4 @@ error_t static_pool_deallocate(static_pool_t * pool, size_t * token);
  *              ERR_NULL_POINTER - A null pointer was found
  *              ERR_NOT_INITIALISED - The pool has not been initialised.
  */
-error_t static_pool_get_unused_count(static_pool_t * pool, size_t * unused_count);
+error_t static_pool_get_available_count(static_pool_t * pool, size_t * unused_count);

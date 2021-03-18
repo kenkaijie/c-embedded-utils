@@ -6,7 +6,7 @@ void mock_object_pool_get_interface(object_pool_t * interface, void * context)
     interface->allocate = (object_pool_allocate_t)mock_object_pool_allocate;
     interface->fetch = (object_pool_fetch_t)mock_object_pool_fetch;
     interface->deallocate = (object_pool_deallocate_t)mock_object_pool_deallocate;
-    interface->get_unused_count = (object_pool_get_unused_count_t)mock_object_pool_get_unused_count;
+    interface->get_available_count = (object_pool_get_available_count_t)mock_object_pool_get_unused_count;
 }
 
 error_t mock_object_pool_allocate(void * pool, size_t * token)

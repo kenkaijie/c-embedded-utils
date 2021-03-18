@@ -14,3 +14,7 @@ docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="/usr/project/
 # Report
 
 docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="/usr/project/" c-embedded-utils "cd /usr/project/build_temp && gcovr -r .. . --xml-pretty  --exclude-directories='.*\/extern\/.*' > coverage_report.xml"
+
+# HTML report
+
+docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="/usr/project/" c-embedded-utils "cd /usr/project/build_temp && gcovr -r .. . --html --html-details -o /usr/project/build_temp/coverage_report.html  --exclude-directories='.*\/extern\/.*'"

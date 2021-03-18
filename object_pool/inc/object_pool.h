@@ -13,7 +13,7 @@ typedef struct s_object_pool object_pool_t;
 typedef error_t(*object_pool_allocate_t)(void * pool, size_t * token);
 typedef error_t(*object_pool_fetch_t)(void * pool, size_t token, void ** object_pointer);
 typedef error_t(*object_pool_deallocate_t)(void * pool, size_t * token);
-typedef error_t(*object_pool_get_unused_count_t)(void * pool, size_t * unused_count);
+typedef error_t(*object_pool_get_available_count_t)(void * pool, size_t * unused_count);
 
 struct s_object_pool
 {
@@ -21,12 +21,12 @@ struct s_object_pool
     object_pool_allocate_t allocate;
     object_pool_fetch_t fetch;
     object_pool_deallocate_t deallocate;
-    object_pool_get_unused_count_t get_unused_count;
+    object_pool_get_available_count_t get_available_count;
 };
 
 inline error_t object_pool_validate_interface(object_pool_t const * interface)
 {
-    if ((interface == NULL) || (interface->allocate == NULL) || (interface->fetch == NULL) || (interface->deallocate == NULL) || (interface->get_unused_count == NULL)) return ERR_NULL_POINTER;
+    if ((interface == NULL) || (interface->allocate == NULL) || (interface->fetch == NULL) || (interface->deallocate == NULL) || (interface->get_available_count == NULL)) return ERR_NULL_POINTER;
     return ERR_NONE;
 }
 
@@ -109,13 +109,13 @@ inline error_t object_pool_deallocate(object_pool_t const * interface, size_t * 
  *              ERR_NULL_POINTER - A null pointer was found
  *              ERR_NOT_INITIALISED - The pool has not been initialised.
  */
-inline error_t object_pool_get_unused_count(object_pool_t const * interface, size_t * unused_count)
+inline error_t object_pool_get_available_count(object_pool_t const * interface, size_t * unused_count)
 {
     error_t ret;
     ret = object_pool_validate_interface(interface);
     if (ret == ERR_NONE)
     {
-        ret = interface->get_unused_count(interface->context, unused_count);
+        ret = interface->get_available_count(interface->context, unused_count);
     }
     return ret;
 }

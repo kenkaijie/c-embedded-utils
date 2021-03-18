@@ -23,7 +23,7 @@ static void test_null_checks(void ** state)
     ret = object_pool_deallocate(NULL, &token);
     assert_int_equal(ERR_NULL_POINTER, ret);
 
-    ret = object_pool_get_unused_count(NULL, &unused_count);
+    ret = object_pool_get_available_count(NULL, &unused_count);
     assert_int_equal(ERR_NULL_POINTER, ret);
 }
 
@@ -58,7 +58,7 @@ static void test_interface_validation(void ** state)
         }
         else if (cycle == 3)
         {
-            interface_temp.get_unused_count = NULL;
+            interface_temp.get_available_count = NULL;
         }
         
         ret = object_pool_allocate(&interface_temp, &token);
@@ -70,7 +70,7 @@ static void test_interface_validation(void ** state)
         ret = object_pool_deallocate(&interface_temp, &token);
         assert_int_equal(ERR_NULL_POINTER, ret);
 
-        ret = object_pool_get_unused_count(&interface_temp, &unused_count);
+        ret = object_pool_get_available_count(&interface_temp, &unused_count);
         assert_int_equal(ERR_NULL_POINTER, ret);
     }
 
@@ -158,14 +158,14 @@ static void test_get_unused_count(void ** state)
     _setup_mock_object_pool_get_unused_count_with_count(context, &unused_count, ERR_NONE, 5, 1);
     expect_function_call(mock_object_pool_get_unused_count);
 
-    ret = object_pool_get_unused_count(&interface, &unused_count);
+    ret = object_pool_get_available_count(&interface, &unused_count);
     assert_int_equal(ERR_NONE, ret);
     assert_int_equal(5, unused_count);
 
     _setup_mock_object_pool_get_unused_count_with_count(context, &unused_count, ERR_GENERIC_ERROR, unused_count, 1);
     expect_function_call(mock_object_pool_get_unused_count);
 
-    ret = object_pool_get_unused_count(&interface, &unused_count);
+    ret = object_pool_get_available_count(&interface, &unused_count);
     assert_int_equal(ERR_GENERIC_ERROR, ret);
 }
 

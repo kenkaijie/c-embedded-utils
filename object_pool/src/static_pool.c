@@ -53,6 +53,7 @@ void static_pool_get_interface(object_pool_t * interface, static_pool_t * pool)
     interface->allocate = (object_pool_allocate_t)static_pool_allocate;
     interface->fetch = (object_pool_fetch_t)static_pool_fetch;
     interface->deallocate = (object_pool_deallocate_t)static_pool_deallocate;
+    interface->get_available_count = (object_pool_get_available_count_t)static_pool_get_available_count;
 }
 
 error_t static_pool_init(static_pool_t * pool, static_pool_config_t const * config)
@@ -140,32 +141,30 @@ error_t static_pool_deallocate(static_pool_t * pool, size_t * token)
     if (!pool->m_initialised) return ERR_NOT_INITIALISED;
     if (!_is_token_in_bounds(pool, *token)) return ERR_OUT_OF_BOUNDS;
 
-    if (*token != OBJECT_POOL_TOKEN_INVALID)
+    if (_is_token_allocated(pool, *token))
     {
-        if (_is_token_allocated(pool, *token))
-        {
-            _lock_if_needed(pool);
+        _lock_if_needed(pool);
 
-            size_t object_idx = *token;
-            size_t buffer_idx = _object_index_to_buffer_index(pool, *token);
+        size_t object_idx = *token;
+        size_t buffer_idx = _object_index_to_buffer_index(pool, *token);
 
-            pool->m_config.metadata_buffer[object_idx].allocated = false;
-            memset(&pool->m_config.buffer[buffer_idx], 0, pool->m_config.object_size);
-            *token = OBJECT_POOL_TOKEN_INVALID;
-            pool->m_slots_remaining++;
-            _unlock_if_needed(pool);
-            
-            ret = ERR_NONE;
-        }
-        else
-        {
-            ret = ERR_INVALID_STATE;
-        }
+        pool->m_config.metadata_buffer[object_idx].allocated = false;
+        memset(&pool->m_config.buffer[buffer_idx], 0, pool->m_config.object_size);
+        *token = OBJECT_POOL_TOKEN_INVALID;
+        pool->m_slots_remaining++;
+        _unlock_if_needed(pool);
+        
+        ret = ERR_NONE;
     }
+    else
+    {
+        ret = ERR_INVALID_STATE;
+    }
+    
     return ret;
 }
 
-error_t static_pool_get_unused_count(static_pool_t * pool, size_t * unused_count)
+error_t static_pool_get_available_count(static_pool_t * pool, size_t * unused_count)
 {
     error_t ret = ERR_NONE;
     if ((pool == NULL) || (unused_count == NULL)) return ERR_NULL_POINTER;
