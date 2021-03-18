@@ -6,6 +6,7 @@
  */
 
 #include "error_codes.h"
+#include <stddef.h>
 
 typedef struct s_critical_section critical_section_t;
 
@@ -36,14 +37,37 @@ struct s_critical_section
 };
 
 /**
- *  @brief  Enter a critical section.
+ *  @brief   Validates that the interface is valid. This is basically just a null checker for the interface's members.
+ * 
+ *  @param[in] interface - Pointer to the interface to check
+ * 
+ *  @returns    ERR_NONE - interface is valid
+ *              ERR_NULL_POINTER - interface null pointer is found
+ */
+inline error_t critical_section_validate_interface(critical_section_t const * interface)
+{
+    if ((interface == NULL) || (interface->enter == NULL) || (interface->exit == NULL)) return ERR_NULL_POINTER;
+    return ERR_NONE;
+}
+
+/**
+ *  @brief  Enter a critical section. 
  * 
  *  @param[in] interface
  * 
  *  @returns    ERR_NONE - Success
  *              ERR_NULL_POINTER - Null pointer detected
  */
-error_t critical_section_enter(critical_section_t * interface);
+inline error_t critical_section_enter(critical_section_t const * interface)
+{
+    error_t ret;
+    ret = critical_section_validate_interface(interface);
+    if (ret == ERR_NONE)
+    {
+        interface->enter(interface->context);
+    }
+    return ret;
+}
 
 /**
  *  @brief  Enter a critical section.
@@ -51,4 +75,13 @@ error_t critical_section_enter(critical_section_t * interface);
  *  @returns    ERR_NONE - Success
  *              ERR_NULL_POINTER - Null pointer detected
  */
-error_t critical_section_exit(critical_section_t * interface);
+inline error_t critical_section_exit(critical_section_t const * interface)
+{
+    error_t ret;
+    ret = critical_section_validate_interface(interface);
+    if (ret == ERR_NONE)
+    {
+        interface->exit(interface->context);
+    }
+    return ret;
+}

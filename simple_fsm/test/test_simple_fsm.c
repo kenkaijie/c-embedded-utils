@@ -407,7 +407,8 @@ static void test_event_stays_same_state(void ** state)
     assert_int_equal(MOCK_FSM_STATE_C, final_state);
 }
 
-int test_simple_fsm_run_tests(void) {
+int test_simple_fsm_run_tests(void)
+{
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_interface_nulls),
         cmocka_unit_test(test_post_deinit_calls_fail),

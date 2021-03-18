@@ -296,7 +296,8 @@ static void test_vector3_le_example(void ** state)
     assert_memory_equal(&expected_value, &actual_value, sizeof(actual_value));
 }
 
-int test_struct_pack_run_tests(void) {
+int test_struct_pack_run_tests(void)
+{
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_overrun_checker),
         cmocka_unit_test(test_le_u8),

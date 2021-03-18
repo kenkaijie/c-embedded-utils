@@ -105,6 +105,7 @@ error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config)
 error_t simple_fsm_deinit(simple_fsm_t * fsm)
 {
     if (fsm == NULL) return ERR_NULL_POINTER;
+
     fsm->m_initialised = false;
     return ERR_NONE;
 }

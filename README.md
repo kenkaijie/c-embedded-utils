@@ -10,8 +10,16 @@ Compiling as per the CI platform uses docker as a primary means of abstracting t
 
 # General Info
 
-## User Assumptions
+## API Sanity Checking
 Input validation only occurs at the interface boundary. It is not required for private methods. (and discouraged).
+
+## C Limitations
+One limitations for the objects is that we cannot enforce the constructor to be called. If a limited lifetime object is instantiated, it may be able to (very likely) bypass the initialisation checks provided by the system due to the random nature of the initial value. Because of this, calling any function other than the init function for an object results in undefined behaviour.
+
+## Documentation
+All library public methods should be documented in the respective header files. The current style should be maintained (see other modules for references).
+
+Ensure that all possible return codes are accounted for, so the users can confidently know which return codes are of interest to them.
 
 ## Thread Safety
 Thread safety is <b>NOT</b> implied here. Some things may work but assume that nothing is thread safe unless otherwise stated in the header or function brief. For certain modules, they will specify how to make the module thread safe with some tips, for example, wrapping functions with synchronisation primatives. This allows for extension of the functions by adding thread safe function calls.
@@ -59,3 +67,20 @@ An interface for lock primatives. Used by certain low level data structures to e
 
 ## Object Pool
 An implementation of an object pool. 
+
+# Guidelines
+These are guidelines for coding up modules.
+
+## Objects should have a Init and Deinit function
+These acts as the constructor and the destructor. Should at the minimum return the following codes:
+
+For Init:
+
+- ERR_NONE - success
+- ERR_NULL_POINTER - a null pointer was found
+- ERR_INVALID_ARG - Config was invalid (if a unexpected NULL was found, returns ERR_NULL_POINTER instead)
+
+For Deinit:
+
+- ERR_NONE - success  
+- ERR_NULL_POINTER - a null pointer was found   

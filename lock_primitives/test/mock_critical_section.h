@@ -29,7 +29,12 @@ void mock_critical_section_exit(void * context);
 /**
  *  @brief  Helper function to setup mocks.
  */
-#define mock_critical_section_setup_entry_exit_mock_with_count(function, with_context_val, num_times) \
+#define _setup_mock_critical_section_enter_with_count(with_context_val, num_times) \
 do { \
-    expect_value_count(function, context, (uintptr_t)with_context_val, num_times); \
+    expect_value_count(mock_critical_section_enter, context, (uintptr_t)with_context_val, num_times); \
+} while(false)
+
+#define _setup_mock_critical_section_exit_with_count(with_context_val, num_times) \
+do { \
+    expect_value_count(mock_critical_section_exit, context, (uintptr_t)with_context_val, num_times); \
 } while(false)
