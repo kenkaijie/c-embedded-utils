@@ -245,8 +245,8 @@ static void test_allocation_fills_and_unfills_correctly_with_locks(void ** state
 
     mock_critical_section_get_interface(&config.critical_section, mock_critical_context);
 
-    mock_critical_section_setup_entry_exit_mock_with_count(mock_critical_section_enter, mock_critical_context, -1);
-    mock_critical_section_setup_entry_exit_mock_with_count(mock_critical_section_exit, mock_critical_context, -1);
+    _setup_mock_critical_section_enter_with_count(mock_critical_context, -1);
+    _setup_mock_critical_section_exit_with_count(mock_critical_context, -1);
 
     expect_function_call_any(mock_critical_section_enter);
     expect_function_call_any(mock_critical_section_exit);

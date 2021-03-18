@@ -76,8 +76,8 @@ static void test_calls_pass_through(void ** state)
     error_t ret;
     void * context_val = (void *)0xFADEADCE;
 
-    mock_critical_section_setup_entry_exit_mock_with_count(mock_critical_section_enter, context_val, 1);
-    mock_critical_section_setup_entry_exit_mock_with_count(mock_critical_section_exit, context_val, 1);
+    _setup_mock_critical_section_enter_with_count(context_val, 1);
+    _setup_mock_critical_section_exit_with_count(context_val, 1);
 
     // call ordering
     expect_function_call(mock_critical_section_enter);  
