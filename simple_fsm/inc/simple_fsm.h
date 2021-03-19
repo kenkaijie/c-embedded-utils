@@ -84,18 +84,19 @@ error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config);
 
 /**
  *  @brief  Deinits the FSM. This invalidates the configuration and ensures that subsequent calls
- *          to any non init/deinit functions. This function cannot fail.
+ *          to any non init/deinit functions. Note this does not call the on exit of the current state. Sudden stops must be handled by the user.
  * 
  *  @param[in]  fsm - the fsm
  * 
  *  @returns    ERR_NONE - success  
- *              ERR_NULL_POINTER - a null pointer was found    
+ *              ERR_NULL_POINTER - a null pointer was found  
  */
 error_t simple_fsm_deinit(simple_fsm_t * fsm);
 
 /**
  *  @brief  Runs the FSM, note that any immediate state transitions are run in this context.
  *          This function essentially calls the On Entry for the initial state and propagates any states from there.
+ *          This function should be called before any calls to on_event.
  *  
  *  @note   Note this function may transition MANY states depending on the FSM provided.
  * 
@@ -108,6 +109,20 @@ error_t simple_fsm_deinit(simple_fsm_t * fsm);
  *              ERR_OUT_OF_BOUNDS - a state requested a state outside of the bounds of the defined state machine
  */
 error_t simple_fsm_start(simple_fsm_t * fsm);
+
+/**
+ *  @brief  Stops the FSM and attempts to call the on exit of the current state. This will not propagate transitions if the exit handler requests a transition.
+ *          This is not part of the typical flow of the state machine, but may assist in helping with cleanup in the event of a shutdown. Note a force stop will deinitialise
+ *          the state machine.
+ * 
+ *  @param[in]  fsm - the fsm
+ *
+ *  @returns    ERR_NONE - success
+ *              ERR_NOT_INITIALISED - fsm not initialised
+ *              ERR_NULL_POINTER - a null pointer was found
+ *              ERR_INCOMPLETE - The on exit handler requested another state other than itself. 
+ */
+error_t simple_fsm_force_stop(simple_fsm_t * fsm);
 
 /**
  *  @brief   Passes the event to the fsm, which will act on the fsm.

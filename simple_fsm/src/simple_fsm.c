@@ -105,7 +105,6 @@ error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config)
 error_t simple_fsm_deinit(simple_fsm_t * fsm)
 {
     if (fsm == NULL) return ERR_NULL_POINTER;
-
     fsm->m_initialised = false;
     return ERR_NONE;
 }
@@ -118,7 +117,21 @@ error_t simple_fsm_start(simple_fsm_t * fsm)
     error_t ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);
     if (ret != ERR_NONE) return ret;
     size_t next_state = handler->on_entry_handler(fsm, fsm->m_config.context);
-    return _resolve_transitions(fsm, next_state);
+    ret = _resolve_transitions(fsm, next_state);
+    return ret;
+}
+
+error_t simple_fsm_force_stop(simple_fsm_t * fsm)
+{
+    if (fsm == NULL) return ERR_NULL_POINTER;
+    if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
+    simple_fsm_state_delegates_t const * handler;
+    error_t ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);
+    if (ret != ERR_NONE) return ret;
+    size_t next_state = handler->on_exit_handler(fsm, fsm->m_config.context);
+    // ensure future calls cannot be executed after we force astop.
+    simple_fsm_deinit(fsm);
+    return (next_state == fsm->m_state) ? ERR_NONE : ERR_INCOMPLETE;
 }
 
 error_t simple_fsm_on_event(simple_fsm_t * fsm, void const * event)
