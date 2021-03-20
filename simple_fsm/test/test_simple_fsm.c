@@ -225,6 +225,53 @@ static void test_simple_start(void ** state)
     assert_int_equal(MOCK_FSM_STATE_A, fsm_state);
 }
 
+static void test_start_out_of_bounds_checking(void ** state)
+{
+    error_t ret;
+    simple_fsm_t fsm;
+    simple_fsm_config_t fsm_config = config;
+
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_entry, MOCK_FSM_STATE_COUNT, &fsm, fsm_config.context, 1);
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_exit, MOCK_FSM_STATE_COUNT, &fsm, fsm_config.context, 1);
+
+    // call order
+    expect_function_call(mock_fsm_state_a_on_entry);
+    expect_function_call(mock_fsm_state_a_on_exit);
+
+    ret = simple_fsm_init(&fsm, &fsm_config);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_start(&fsm);
+    assert_int_equal(ERR_OUT_OF_BOUNDS, ret);
+}
+
+static void test_on_event_out_of_bounds_checking(void ** state)
+{
+    error_t ret;
+    simple_fsm_t fsm;
+    simple_fsm_config_t fsm_config = config;
+    void * event = (void *)0xDEADBEEF;
+
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_entry, MOCK_FSM_STATE_A, &fsm, fsm_config.context, 1);
+    mock_fsm_setup_on_event_mock_with_count(mock_fsm_state_a_on_event, MOCK_FSM_STATE_COUNT, &fsm, event, fsm_config.context, 1);
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_exit, MOCK_FSM_STATE_A, &fsm, fsm_config.context, 1);
+
+    // call order
+    expect_function_call(mock_fsm_state_a_on_entry);
+    expect_function_call(mock_fsm_state_a_on_event);
+    expect_function_call(mock_fsm_state_a_on_exit);
+
+    ret = simple_fsm_init(&fsm, &fsm_config);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_start(&fsm);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_on_event(&fsm, event);
+    assert_int_equal(ERR_OUT_OF_BOUNDS, ret);
+}
+
+
 /**
  *  @brief  Test a simple startup for A, this time we fail on the (On Entry) transition of A, 
  *          so we expect A (En, Fail) -> A (Ex) -> B (En, Fail) -> B (Ex) -> C(En)
@@ -492,6 +539,8 @@ int test_simple_fsm_run_tests(void)
         cmocka_unit_test(test_event_stays_same_state),
         cmocka_unit_test(test_force_stop_passes_through),
         cmocka_unit_test(test_force_stop_returns_error_if_state_fails_transition),
+        cmocka_unit_test(test_start_out_of_bounds_checking),
+        cmocka_unit_test(test_on_event_out_of_bounds_checking),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
