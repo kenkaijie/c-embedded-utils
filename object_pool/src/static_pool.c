@@ -65,6 +65,8 @@ error_t static_pool_init(static_pool_t * pool, static_pool_config_t const * conf
     for (size_t idx = 0; idx < pool->m_config.object_count; ++idx)
     {
         pool->m_config.metadata_buffer[idx].allocated = false;
+        // precalculate all the locations for each object, so we don;t have to do it multiple times.
+        // these pointers will never change
         pool->m_config.metadata_buffer[idx].object_location = (void *)&pool->m_config.buffer[idx * pool->m_config.object_size];
     }
 
