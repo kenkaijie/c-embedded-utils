@@ -1,29 +1,6 @@
 #include "simple_fsm.h"
 
-static inline error_t _get_delegate_from_state(simple_fsm_t * fsm, size_t state, simple_fsm_state_delegates_t const ** handler);
 static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state);
-static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state);
-
-/**
- *  @brief  Tiny helper to get the handlers for a specified state.
- * 
- *  @param[in]  fsm - the fsm
- *  @param[in]  state - the state to request handlers for
- *  @param[out] handlers - the handlers for the requested state, if valid
- * 
- *  @returns    ERR_NONE - sucessfully fetched
- *              ERR_OUT_OF_BOUNDS - state is not within the acceptable bounds
- */
-static inline error_t _get_delegate_from_state(simple_fsm_t * fsm, size_t state, simple_fsm_state_delegates_t const ** handler)
-{
-    if (state < fsm->m_config.state_count)
-    {
-        *handler = &fsm->m_config.state_delegates[state];
-        return ERR_NONE;
-    }
-    *handler = NULL;
-    return ERR_OUT_OF_BOUNDS;
-}
 
 /**
  *  @brief  Will keep traversing the Exit/Entry states until we settle at a state. Uses the FSM max loop count to 
@@ -39,14 +16,14 @@ static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state)
     while ((next_state != fsm->m_state) && (!is_transition_limit_reached))
     {
         // We need to keep the on exit state, in case we transition elsewhere from here.
-        ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);
-        if (ret != ERR_NONE) return ret;
+        simple_fsm_state_delegates_t const * handler = &fsm->m_config.state_delegates[fsm->m_state];
         size_t on_exit_next_state = handler->on_exit_handler(fsm, fsm->m_config.context);
-        // set the state variable to the next state, whether we choose the original next state, or we use the newly requested state
-        fsm->m_state = (on_exit_next_state == fsm->m_state) ? next_state : on_exit_next_state;
-        
-        ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);
-        if (ret != ERR_NONE) return ret;
+        // set the state variable to the next state, whether we choose the original next state, or we use the newly requested state,
+        size_t next_requested_state = (on_exit_next_state == fsm->m_state) ? next_state : on_exit_next_state;
+        // we check here that the new state is within bounds
+        if (next_requested_state >= fsm->m_config.state_count) return ERR_OUT_OF_BOUNDS;
+        fsm->m_state = next_requested_state;
+        handler = &fsm->m_config.state_delegates[fsm->m_state];
         next_state = handler->on_entry_handler(fsm, fsm->m_config.context);
 
         // we increment the loop cycle count (this loop is a sinlge transition)
@@ -105,30 +82,40 @@ error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config)
 error_t simple_fsm_deinit(simple_fsm_t * fsm)
 {
     if (fsm == NULL) return ERR_NULL_POINTER;
-
     fsm->m_initialised = false;
     return ERR_NONE;
 }
 
 error_t simple_fsm_start(simple_fsm_t * fsm)
 {
+    error_t ret;
     if (fsm == NULL) return ERR_NULL_POINTER;
     if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
-    simple_fsm_state_delegates_t const * handler;
-    error_t ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);
-    if (ret != ERR_NONE) return ret;
+    simple_fsm_state_delegates_t const * handler = &fsm->m_config.state_delegates[fsm->m_state];
     size_t next_state = handler->on_entry_handler(fsm, fsm->m_config.context);
-    return _resolve_transitions(fsm, next_state);
+    ret = _resolve_transitions(fsm, next_state);
+    return ret;
+}
+
+error_t simple_fsm_force_stop(simple_fsm_t * fsm)
+{
+     error_t ret;
+    if (fsm == NULL) return ERR_NULL_POINTER;
+    if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
+    simple_fsm_state_delegates_t const * handler = &fsm->m_config.state_delegates[fsm->m_state];
+    size_t next_state = handler->on_exit_handler(fsm, fsm->m_config.context);
+    // ensure future calls cannot be executed after we force astop.
+    simple_fsm_deinit(fsm);
+    return (next_state == fsm->m_state) ? ERR_NONE : ERR_INCOMPLETE;
 }
 
 error_t simple_fsm_on_event(simple_fsm_t * fsm, void const * event)
 {
+     error_t ret;
     if (fsm == NULL) return ERR_NULL_POINTER;
     if (event == NULL) return ERR_NULL_POINTER;
     if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
-    simple_fsm_state_delegates_t const * handler;
-    error_t ret =  _get_delegate_from_state(fsm, fsm->m_state, &handler);
-    if (ret != ERR_NONE) return ret;
+    simple_fsm_state_delegates_t const * handler = &fsm->m_config.state_delegates[fsm->m_state];
     size_t next_state = handler->on_event_handler(fsm, event, fsm->m_config.context);
     return _resolve_transitions(fsm, next_state);
 }

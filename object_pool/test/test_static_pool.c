@@ -123,22 +123,33 @@ static void test_invalid_configs(void ** state)
     config.buffer = NULL;
     ret = static_pool_init(&pool, &config);
     assert_int_equal(ERR_NULL_POINTER, ret);
+    config.buffer = buffer;
 
     config.buffer = NULL;
     ret = static_pool_init(&pool, &config);
     assert_int_equal(ERR_NULL_POINTER, ret);
+    config.buffer = buffer;
+
+    // check sizing requirements (buffer too small, a buffer biugger than the memory size is ok.)
+    config.buffer_size = TEST_OBJECT_COUNT * TEST_OBJECT_SIZE_BYTES - 1;
+    ret = static_pool_init(&pool, &config);
+    assert_int_equal(ERR_INVALID_ARG, ret);
+    config.buffer_size = sizeof(buffer);
 
     config.use_lock = true;
     mock_critical_section_get_interface(&config.critical_section, (void *)0xDEADBEEF);
     config.critical_section.enter = NULL;
     ret = static_pool_init(&pool, &config);
     assert_int_equal(ERR_NULL_POINTER, ret);
+    config.use_lock = false;
 
     config.use_lock = true;
     mock_critical_section_get_interface(&config.critical_section, (void *)0xDEADBEEF);
     config.critical_section.exit = NULL;
     ret = static_pool_init(&pool, &config);
     assert_int_equal(ERR_NULL_POINTER, ret);
+    config.use_lock = false;
+
 }
 
 static void test_deinit_invalid_states(void ** state)

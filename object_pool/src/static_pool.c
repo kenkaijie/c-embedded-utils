@@ -2,11 +2,6 @@
 
 #include <string.h>
 
-static inline size_t _object_index_to_buffer_index(static_pool_t * pool, size_t object_index)
-{
-    return object_index * pool->m_config.object_size;
-}
-
 static inline void _lock_if_needed(static_pool_t * pool)
 {
     if (pool->m_config.use_lock)
@@ -37,7 +32,7 @@ static inline bool _is_token_allocated(static_pool_t * pool, size_t token)
 static inline error_t _validate_config(static_pool_config_t const * config)
 {
     if ((config->buffer == NULL) || (config->metadata_buffer == 0)) return ERR_NULL_POINTER;
-    if (config->object_size * config->object_count != config->buffer_size) return ERR_INVALID_ARG;
+    if (config->buffer_size < (config->object_size * config->object_count)) return ERR_INVALID_ARG;
     if (config->use_lock)
     {
         error_t ret;
@@ -67,9 +62,10 @@ error_t static_pool_init(static_pool_t * pool, static_pool_config_t const * conf
     pool->m_config = *config;
     pool->m_slots_remaining = config->object_count;
     // initialise all the metadata and other fields
-    for (size_t idx=0; idx < pool->m_config.object_count; ++idx)
+    for (size_t idx = 0; idx < pool->m_config.object_count; ++idx)
     {
         pool->m_config.metadata_buffer[idx].allocated = false;
+        pool->m_config.metadata_buffer[idx].object_location = (void *)&pool->m_config.buffer[idx * pool->m_config.object_size];
     }
 
     return ERR_NONE;
@@ -123,7 +119,7 @@ error_t static_pool_fetch(static_pool_t * pool, size_t token, void ** object_poi
 
     if (_is_token_allocated(pool, token))
     {
-        *object_pointer = &pool->m_config.buffer[_object_index_to_buffer_index(pool, token)];
+        *object_pointer = pool->m_config.metadata_buffer[token].object_location;
         ret = ERR_NONE;
     }
     else
@@ -144,12 +140,9 @@ error_t static_pool_deallocate(static_pool_t * pool, size_t * token)
     if (_is_token_allocated(pool, *token))
     {
         _lock_if_needed(pool);
-
-        size_t object_idx = *token;
-        size_t buffer_idx = _object_index_to_buffer_index(pool, *token);
-
-        pool->m_config.metadata_buffer[object_idx].allocated = false;
-        memset(&pool->m_config.buffer[buffer_idx], 0, pool->m_config.object_size);
+        static_metadata_t * metadata = &pool->m_config.metadata_buffer[*token];
+        metadata->allocated = false;
+        memset(metadata->object_location, 0, pool->m_config.object_size);
         *token = OBJECT_POOL_TOKEN_INVALID;
         pool->m_slots_remaining++;
         _unlock_if_needed(pool);

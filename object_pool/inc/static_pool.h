@@ -18,6 +18,7 @@ typedef struct s_static_metadata static_metadata_t;
 struct s_static_metadata
 {
     bool allocated;
+    void * object_location;
 };
 
 struct s_static_pool_config

@@ -55,6 +55,10 @@ static void test_interface_nulls(void ** state)
     ret = simple_fsm_start(NULL);
     assert_int_equal(ERR_NULL_POINTER, ret);
 
+    // force stop
+    ret = simple_fsm_force_stop(NULL);
+    assert_int_equal(ERR_NULL_POINTER, ret);
+
     // on event, as we never initialise the fsm, this should fail
     state_event_t const event = 0x5423U;
     ret = simple_fsm_on_event(NULL, &event);
@@ -84,6 +88,9 @@ static void test_post_deinit_calls_fail(void ** state)
     assert_int_equal(ERR_NOT_INITIALISED, ret);
 
     ret = simple_fsm_on_event(&fsm, &event);
+    assert_int_equal(ERR_NOT_INITIALISED, ret);
+
+    ret = simple_fsm_force_stop(&fsm);
     assert_int_equal(ERR_NOT_INITIALISED, ret);
 
 }
@@ -217,6 +224,53 @@ static void test_simple_start(void ** state)
     assert_int_equal(ERR_NONE, ret);
     assert_int_equal(MOCK_FSM_STATE_A, fsm_state);
 }
+
+static void test_start_out_of_bounds_checking(void ** state)
+{
+    error_t ret;
+    simple_fsm_t fsm;
+    simple_fsm_config_t fsm_config = config;
+
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_entry, MOCK_FSM_STATE_COUNT, &fsm, fsm_config.context, 1);
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_exit, MOCK_FSM_STATE_COUNT, &fsm, fsm_config.context, 1);
+
+    // call order
+    expect_function_call(mock_fsm_state_a_on_entry);
+    expect_function_call(mock_fsm_state_a_on_exit);
+
+    ret = simple_fsm_init(&fsm, &fsm_config);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_start(&fsm);
+    assert_int_equal(ERR_OUT_OF_BOUNDS, ret);
+}
+
+static void test_on_event_out_of_bounds_checking(void ** state)
+{
+    error_t ret;
+    simple_fsm_t fsm;
+    simple_fsm_config_t fsm_config = config;
+    void * event = (void *)0xDEADBEEF;
+
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_entry, MOCK_FSM_STATE_A, &fsm, fsm_config.context, 1);
+    mock_fsm_setup_on_event_mock_with_count(mock_fsm_state_a_on_event, MOCK_FSM_STATE_COUNT, &fsm, event, fsm_config.context, 1);
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_exit, MOCK_FSM_STATE_A, &fsm, fsm_config.context, 1);
+
+    // call order
+    expect_function_call(mock_fsm_state_a_on_entry);
+    expect_function_call(mock_fsm_state_a_on_event);
+    expect_function_call(mock_fsm_state_a_on_exit);
+
+    ret = simple_fsm_init(&fsm, &fsm_config);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_start(&fsm);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_on_event(&fsm, event);
+    assert_int_equal(ERR_OUT_OF_BOUNDS, ret);
+}
+
 
 /**
  *  @brief  Test a simple startup for A, this time we fail on the (On Entry) transition of A, 
@@ -407,6 +461,66 @@ static void test_event_stays_same_state(void ** state)
     assert_int_equal(MOCK_FSM_STATE_C, final_state);
 }
 
+static void test_force_stop_passes_through(void ** state)
+{
+    size_t cycles = 5;
+    error_t ret;
+    simple_fsm_t fsm;
+    simple_fsm_config_t fsm_config = config;
+    fsm_config.initial_state = MOCK_FSM_STATE_C;
+    state_event_t event = 0xDEADBEEF;
+
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_c_on_entry, MOCK_FSM_STATE_C, &fsm, fsm_config.context, 1);
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_c_on_exit, MOCK_FSM_STATE_C, &fsm, fsm_config.context, 1);
+
+    // call order
+    expect_function_call(mock_fsm_state_c_on_entry);
+    expect_function_call(mock_fsm_state_c_on_exit);
+
+    ret = simple_fsm_init(&fsm, &fsm_config);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_start(&fsm);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_force_stop(&fsm);
+    assert_int_equal(ERR_NONE, ret);
+
+    size_t final_state;
+    ret = simple_fsm_get_current_state(&fsm, &final_state);
+    assert_int_equal(ERR_NOT_INITIALISED, ret);
+}
+
+static void test_force_stop_returns_error_if_state_fails_transition(void ** state)
+{
+    size_t cycles = 5;
+    error_t ret;
+    simple_fsm_t fsm;
+    simple_fsm_config_t fsm_config = config;
+    fsm_config.initial_state = MOCK_FSM_STATE_C;
+    state_event_t event = 0xDEADBEEF;
+
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_c_on_entry, MOCK_FSM_STATE_C, &fsm, fsm_config.context, 1);
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_c_on_exit, MOCK_FSM_STATE_A, &fsm, fsm_config.context, 1);
+
+    // call order
+    expect_function_call(mock_fsm_state_c_on_entry);
+    expect_function_call(mock_fsm_state_c_on_exit);
+
+    ret = simple_fsm_init(&fsm, &fsm_config);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_start(&fsm);
+    assert_int_equal(ERR_NONE, ret);
+
+    ret = simple_fsm_force_stop(&fsm);
+    assert_int_equal(ERR_INCOMPLETE, ret);
+
+    size_t final_state;
+    ret = simple_fsm_get_current_state(&fsm, &final_state);
+    assert_int_equal(ERR_NOT_INITIALISED, ret);
+}
+
 int test_simple_fsm_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
@@ -423,6 +537,10 @@ int test_simple_fsm_run_tests(void)
         cmocka_unit_test(test_on_event_transitions),
         cmocka_unit_test(test_looped_transitions),
         cmocka_unit_test(test_event_stays_same_state),
+        cmocka_unit_test(test_force_stop_passes_through),
+        cmocka_unit_test(test_force_stop_returns_error_if_state_fails_transition),
+        cmocka_unit_test(test_start_out_of_bounds_checking),
+        cmocka_unit_test(test_on_event_out_of_bounds_checking),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

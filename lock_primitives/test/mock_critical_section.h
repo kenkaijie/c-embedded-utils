@@ -8,7 +8,7 @@
 #include <stdbool.h>
 
 /**
- *  @brief  Gets a preconfigured interface for the mock. Note typically applications will also not specify a context explicitl, as they will be implicitly added.
+ *  @brief  Gets a preconfigured interface for the mock. Note typically applications will also not specify a context explicitly, as they will be implicitly added.
  */
 void mock_critical_section_get_interface(critical_section_t * interface, void * context);
 
