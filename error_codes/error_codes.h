@@ -18,6 +18,7 @@ enum e_error_codes
     ERR_NULL_POINTER, /**< A null pointer was seen where it was not expected. */
     ERR_NOOP, /**< Used to signal that an optionally triggered function did not do anything, not actually an error */
     ERR_INCOMPLETE, /**< Function had to return early, but would have done more (used for indicating if an abort stopped prematurely) */
+    ERR_EMPTY, /**< Typically for data structures, indicates there is no values within the collection. */
 };
 
 typedef uint32_t error_t;

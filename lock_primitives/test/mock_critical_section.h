@@ -10,7 +10,7 @@
 /**
  *  @brief  Gets a preconfigured interface for the mock. Note typically applications will also not specify a context explicitly, as they will be implicitly added.
  */
-void mock_critical_section_get_interface(critical_section_t * interface, void * context);
+void mock_critical_section_as_critical_section(void * context, critical_section_t * interface);
 
 /**
  *  @brief  The mocked section enter function. This usually is private but is set to public to ensure testability.
