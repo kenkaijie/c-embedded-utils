@@ -30,10 +30,7 @@ struct s_object_pool
  *              ERR_NULL_POINTER
  *              ERR_NO_MEM - No slots are available
  */
-inline error_t object_pool_allocate(object_pool_t const * interface, void ** object_ptr)
-{
-    return interface->allocate(interface->context, object_ptr);
-}
+error_t object_pool_allocate(object_pool_t const * interface, void ** object_ptr);
 
 /**
  *  @brief  Frees an object for reuse in the future. Note all objects will be zeroed when freed.
@@ -47,10 +44,7 @@ inline error_t object_pool_allocate(object_pool_t const * interface, void ** obj
  *              ERR_OUT_OF_BOUNDS - The token provided is out of bounds.
  *              ERR_INVALID_STATE - Token provided points to an unallocated object.
  */
-inline error_t object_pool_deallocate(object_pool_t const * interface, void ** object_ptr)
-{
-    return interface->deallocate(interface->context, object_ptr);
-}
+error_t object_pool_deallocate(object_pool_t const * interface, void ** object_ptr);
 
 /**
  *  @brief  Gets the number of remaining slots in the pool.
@@ -59,7 +53,4 @@ inline error_t object_pool_deallocate(object_pool_t const * interface, void ** o
  * 
  *  @returns    The number of unused slots in the pool
  */
-inline size_t object_pool_get_available_count(object_pool_t const * interface)
-{
-    return interface->get_available_count(interface->context);
-}
+size_t object_pool_get_available_count(object_pool_t const * interface);
