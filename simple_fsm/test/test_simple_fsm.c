@@ -33,66 +33,63 @@ static void test_interface_nulls(void ** state)
     simple_fsm_config_t test_config = config;
 
     // init
-    ret = simple_fsm_init(NULL, &config);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
     ret = simple_fsm_init(&fsm, NULL);
     assert_int_equal(ERR_NULL_POINTER, ret);
 
-    // deinit
-    ret = simple_fsm_deinit(NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    size_t state_val;
-    // simple_fsm_get_current_state
-    ret = simple_fsm_get_current_state(NULL, &state_val);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = simple_fsm_get_current_state(&fsm, NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    // start, as we never initialise the fsm, this should fail
-    ret = simple_fsm_start(NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    // force stop
-    ret = simple_fsm_force_stop(NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
     // on event, as we never initialise the fsm, this should fail
-    state_event_t const event = 0x5423U;
-    ret = simple_fsm_on_event(NULL, &event);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
     ret = simple_fsm_on_event(&fsm, NULL);
     assert_int_equal(ERR_NULL_POINTER, ret);
 }
 
-static void test_post_deinit_calls_fail(void ** state)
+/**
+ *  @brief  This is just a test to ensure no funny business on the deinit, for this object, deinit does nothing.
+ */
+static void test_deinit_does_not_fail()
 {
     error_t ret;
     simple_fsm_t fsm;
-    size_t state_val = 0;
-    state_event_t const event = 0x1234U; 
 
+    // init
     ret = simple_fsm_init(&fsm, &config);
     assert_int_equal(ERR_NONE, ret);
 
-    ret = simple_fsm_deinit(&fsm);
+    // deinit actually does nothing
+    simple_fsm_deinit(&fsm);
+}
+
+/**
+ *  @brief  Ensures correct return codes as per the API
+ */
+static void test_not_started_state_machine(void ** state)
+{
+    error_t ret;
+    simple_fsm_t fsm;
+
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_entry, MOCK_FSM_STATE_A, &fsm, config.context, -1);
+    mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_a_on_exit, MOCK_FSM_STATE_A, &fsm, config.context, -1);
+
+    ignore_function_calls(mock_fsm_state_a_on_entry);
+    ignore_function_calls(mock_fsm_state_a_on_exit);
+
+    // init
+    ret = simple_fsm_init(&fsm, &config);
     assert_int_equal(ERR_NONE, ret);
 
-    ret = simple_fsm_get_current_state(&fsm, &state_val);
-    assert_int_equal(ERR_NOT_INITIALISED, ret);
+    ret = simple_fsm_start(&fsm);
+    assert_int_equal(ERR_NONE, ret);
 
     ret = simple_fsm_start(&fsm);
-    assert_int_equal(ERR_NOT_INITIALISED, ret);
-
-    ret = simple_fsm_on_event(&fsm, &event);
-    assert_int_equal(ERR_NOT_INITIALISED, ret);
+    assert_int_equal(ERR_NOOP, ret);
 
     ret = simple_fsm_force_stop(&fsm);
-    assert_int_equal(ERR_NOT_INITIALISED, ret);
+    assert_int_equal(ERR_NONE, ret);
 
+    ret = simple_fsm_force_stop(&fsm);
+    assert_int_equal(ERR_NOOP, ret);
+
+    uint32_t event = 1;
+    ret = simple_fsm_on_event(&fsm, &event);
+    assert_int_equal(ERR_NOT_INITIALISED, ret);
 }
 
 /**
@@ -219,9 +216,7 @@ static void test_simple_start(void ** state)
     ret = simple_fsm_start(&fsm);
     assert_int_equal(ERR_NONE, ret);
 
-    size_t fsm_state;
-    ret = simple_fsm_get_current_state(&fsm, &fsm_state);
-    assert_int_equal(ERR_NONE, ret);
+    size_t fsm_state = simple_fsm_get_current_state(&fsm);
     assert_int_equal(MOCK_FSM_STATE_A, fsm_state);
 }
 
@@ -301,9 +296,7 @@ static void test_simple_start_transitions(void ** state)
     ret = simple_fsm_start(&fsm);
     assert_int_equal(ERR_NONE, ret);
 
-    size_t fsm_state;
-    ret = simple_fsm_get_current_state(&fsm, &fsm_state);
-    assert_int_equal(ERR_NONE, ret);
+    size_t fsm_state = simple_fsm_get_current_state(&fsm);
     assert_int_equal(MOCK_FSM_STATE_C, fsm_state);
 }
 
@@ -375,9 +368,7 @@ static void test_on_event_transitions(void ** state)
     ret = simple_fsm_on_event(&fsm, &event);
     assert_int_equal(ERR_NONE, ret);
 
-    size_t final_state;
-    ret = simple_fsm_get_current_state(&fsm, &final_state);
-    assert_int_equal(ERR_NONE, ret);
+    size_t final_state = simple_fsm_get_current_state(&fsm);
     assert_int_equal(MOCK_FSM_STATE_C, final_state);
 }
 
@@ -455,9 +446,7 @@ static void test_event_stays_same_state(void ** state)
     ret = simple_fsm_on_event(&fsm, &event);
     assert_int_equal(ERR_NONE, ret);
 
-    size_t final_state;
-    ret = simple_fsm_get_current_state(&fsm, &final_state);
-    assert_int_equal(ERR_NONE, ret);
+    size_t final_state = simple_fsm_get_current_state(&fsm);
     assert_int_equal(MOCK_FSM_STATE_C, final_state);
 }
 
@@ -486,9 +475,8 @@ static void test_force_stop_passes_through(void ** state)
     ret = simple_fsm_force_stop(&fsm);
     assert_int_equal(ERR_NONE, ret);
 
-    size_t final_state;
-    ret = simple_fsm_get_current_state(&fsm, &final_state);
-    assert_int_equal(ERR_NOT_INITIALISED, ret);
+    size_t final_state = simple_fsm_get_current_state(&fsm);
+    assert_int_equal(MOCK_FSM_STATE_C, final_state);
 }
 
 static void test_force_stop_returns_error_if_state_fails_transition(void ** state)
@@ -516,17 +504,17 @@ static void test_force_stop_returns_error_if_state_fails_transition(void ** stat
     ret = simple_fsm_force_stop(&fsm);
     assert_int_equal(ERR_INCOMPLETE, ret);
 
-    size_t final_state;
-    ret = simple_fsm_get_current_state(&fsm, &final_state);
-    assert_int_equal(ERR_NOT_INITIALISED, ret);
+    size_t final_state = simple_fsm_get_current_state(&fsm);
+    assert_int_equal(MOCK_FSM_STATE_C, final_state);
 }
 
 int test_simple_fsm_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_interface_nulls),
-        cmocka_unit_test(test_post_deinit_calls_fail),
         cmocka_unit_test(test_start_bad_fsm_def),
+        cmocka_unit_test(test_deinit_does_not_fail),
+        cmocka_unit_test(test_not_started_state_machine),
         cmocka_unit_test(test_invalid_config_no_state_delegate),
         cmocka_unit_test(test_invalid_config_no_state_delegate_callbacks),
         cmocka_unit_test(test_invalid_config_no_states),

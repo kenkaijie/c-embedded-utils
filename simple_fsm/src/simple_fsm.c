@@ -1,5 +1,8 @@
 #include "simple_fsm.h"
 
+#include <string.h>
+#include "mem_utils.h"
+
 static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state);
 
 /**
@@ -54,67 +57,61 @@ static error_t _validate_config(simple_fsm_config_t const * config)
     return ERR_NONE;
 }
 
-error_t simple_fsm_get_current_state(simple_fsm_t * fsm, size_t * state)
+size_t simple_fsm_get_current_state(simple_fsm_t * fsm)
 {   
-    if (fsm == NULL) return ERR_NULL_POINTER;
-    if (state == NULL) return ERR_NULL_POINTER;
-    if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
-
-    *state = fsm->m_state;
-
-    return ERR_NONE;
+    return fsm->m_state;
 }
 
 error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config)
 {
     error_t ret;
-    if (fsm == NULL) return ERR_NULL_POINTER;
     if (config == NULL) return ERR_NULL_POINTER;
     ret = _validate_config(config);
     if (ret != ERR_NONE) return ret;
 
     fsm->m_config = *config;
     fsm->m_state = fsm->m_config.initial_state;
-    fsm->m_initialised = true;
+    fsm->m_started = false;
     return ret;
 }
 
-error_t simple_fsm_deinit(simple_fsm_t * fsm)
+void simple_fsm_deinit(simple_fsm_t * fsm)
 {
-    if (fsm == NULL) return ERR_NULL_POINTER;
-    fsm->m_initialised = false;
-    return ERR_NONE;
+    mem_utils_fill_deadbeef(fsm, sizeof(simple_fsm_t));
 }
 
 error_t simple_fsm_start(simple_fsm_t * fsm)
 {
     error_t ret;
-    if (fsm == NULL) return ERR_NULL_POINTER;
-    if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
+    if (fsm->m_started) return ERR_NOOP;
+    fsm->m_started = true;
+    fsm->m_state = fsm->m_config.initial_state;
     simple_fsm_state_delegates_t const * handler = &fsm->m_config.state_delegates[fsm->m_state];
     size_t next_state = handler->on_entry_handler(fsm, fsm->m_config.context);
     ret = _resolve_transitions(fsm, next_state);
+    if (ret != ERR_NONE)
+    {
+        fsm->m_started = false;
+    }
     return ret;
 }
 
 error_t simple_fsm_force_stop(simple_fsm_t * fsm)
 {
      error_t ret;
-    if (fsm == NULL) return ERR_NULL_POINTER;
-    if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
+    if (!fsm->m_started) return ERR_NOOP;
     simple_fsm_state_delegates_t const * handler = &fsm->m_config.state_delegates[fsm->m_state];
     size_t next_state = handler->on_exit_handler(fsm, fsm->m_config.context);
     // ensure future calls cannot be executed after we force astop.
-    simple_fsm_deinit(fsm);
+    fsm->m_started = false;
     return (next_state == fsm->m_state) ? ERR_NONE : ERR_INCOMPLETE;
 }
 
 error_t simple_fsm_on_event(simple_fsm_t * fsm, void const * event)
 {
      error_t ret;
-    if (fsm == NULL) return ERR_NULL_POINTER;
     if (event == NULL) return ERR_NULL_POINTER;
-    if (!fsm->m_initialised) return ERR_NOT_INITIALISED;
+    if (!fsm->m_started) return ERR_NOT_INITIALISED;
     simple_fsm_state_delegates_t const * handler = &fsm->m_config.state_delegates[fsm->m_state];
     size_t next_state = handler->on_event_handler(fsm, event, fsm->m_config.context);
     return _resolve_transitions(fsm, next_state);

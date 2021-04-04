@@ -84,7 +84,7 @@ static void test_calls_pass_through(void ** state)
     expect_function_call(mock_critical_section_exit);  
 
     critical_section_t interface;
-    mock_critical_section_get_interface(&interface, context_val);
+    mock_critical_section_as_critical_section(context_val, &interface);
 
     ret = critical_section_enter(&interface);
     assert_int_equal(ERR_NONE, ret);

@@ -13,9 +13,6 @@ Compiling as per the CI platform uses docker as a primary means of abstracting t
 ## API Sanity Checking
 Input validation only occurs at the interface boundary. It is not required for private methods. (and discouraged).
 
-## C Limitations
-One limitations for the objects is that we cannot enforce the constructor to be called. If a limited lifetime object is instantiated, it may be able to (very likely) bypass the initialisation checks provided by the system due to the random nature of the initial value. Because of this, calling any function other than the init function for an object results in undefined behaviour.
-
 ## Documentation
 All library public methods should be documented in the respective header files. The current style should be maintained (see other modules for references).
 
@@ -33,16 +30,26 @@ This project contains options which allow for the triggering of different action
 ### CMake Targets
 Each module here provides a target for the specific component. All components provide a target, as well as a test target if tests are to be run on an embedded system.
 
-## Generate Targets
-To generate targets, we use gcovr with the following command (performed within the build folder)
+# Guidelines
+These are guidelines for coding up modules.
 
-Gcovr can be installed using `pip install gcovr`.
+## User Assumptions
+Not every possible failure by the user can be accounted for. We can make the following assumption:
+- Everything is statically allocated (many of the libraries have different forms if we consider dynamic memory)
+- Init is always called as the first function for any object. (I.e we can assume the user initialises the objects before actually using them)
+- Deinit is always the last call, and the user MUST call init before using any other functions.
+- Deinit will always succeed, and must have a void return signature (like a destructor).
+- Deinit should set memory to 0xDEADBEEF, repeated.
+- Null checking is not required for the object reference function. (this is to allow direct porting). It is the user's responsibility that the main object is not null. We can always assume the object pointer is always correct.
 
-```
-gcovr -r .. . --xml-pretty  --exclude-directories=".*\/extern\/.* > coverage_report.xml"
-```
+## Objects should have a Init and Deinit function
+These acts as the constructor and the destructor. Should at the minimum return the following codes:
 
-This produces a html report for the system. It excludes generating coverage for extern libraries.
+For Init:
+
+- ERR_NONE - success
+- ERR_NULL_POINTER - a null pointer was found
+- ERR_INVALID_ARG - Config was invalid (if a unexpected NULL was found, returns ERR_NULL_POINTER instead)
 
 # Module Overviews
 If a module is added, ensure a small breif is placed here. The detailed functionality that cannot be explained in the function's inline documentation can fall in the module's root directory.
@@ -67,20 +74,3 @@ An interface for lock primatives. Used by certain low level data structures to e
 
 ## Object Pool
 An implementation of an object pool. 
-
-# Guidelines
-These are guidelines for coding up modules.
-
-## Objects should have a Init and Deinit function
-These acts as the constructor and the destructor. Should at the minimum return the following codes:
-
-For Init:
-
-- ERR_NONE - success
-- ERR_NULL_POINTER - a null pointer was found
-- ERR_INVALID_ARG - Config was invalid (if a unexpected NULL was found, returns ERR_NULL_POINTER instead)
-
-For Deinit:
-
-- ERR_NONE - success  
-- ERR_NULL_POINTER - a null pointer was found   

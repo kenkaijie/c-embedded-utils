@@ -37,13 +37,15 @@ typedef size_t(*simple_fsm_on_entry_exit_handler_t)(simple_fsm_t * fsm, void * c
  */
 typedef size_t(*simple_fsm_on_event_handler_t)(simple_fsm_t * fsm, void const * event, void * context);
 
-struct s_simple_fsm_state_delegates {
+struct s_simple_fsm_state_delegates
+{
     simple_fsm_on_entry_exit_handler_t on_entry_handler;
     simple_fsm_on_event_handler_t on_event_handler;
     simple_fsm_on_entry_exit_handler_t on_exit_handler;
 };
 
-struct s_simple_fsm_config {
+struct s_simple_fsm_config
+{
     void * context; /**< Context to call the state functions by. */
     simple_fsm_state_delegates_t const * state_delegates; /**< The pointer to the array of state function pointers. Must all be non null. */
     size_t state_count; /**< The number of states. */
@@ -51,8 +53,9 @@ struct s_simple_fsm_config {
     size_t max_transition_count; /**< The maximum transitions any single event can trigger before returning. This prevents endless transitioning between the On Entry/On Exit states in the event of some catastrophic failure on a state machine with connected/strongly connected states. */
 };
 
-struct s_simple_fsm {
-    bool m_initialised;
+struct s_simple_fsm
+{
+    bool m_started;
     simple_fsm_config_t m_config;
     size_t m_state;
     size_t m_loop_count;
@@ -64,11 +67,9 @@ struct s_simple_fsm {
  *  @param[in]  fsm - the fsm
  *  @param[out]  state - the state, only valid to use if function returns ERR_NONE.
  *                  
- *  @returns    ERR_NONE - get success
- *              ERR_NULL_POINTER - a null pointer was found
- *              ERR_NOT_INITIALISED - fsm not initialised, state will not have any meaning
+ *  @returns    The current state of the system. If the state machine is not running, this will return the last known state.
  */
-error_t simple_fsm_get_current_state(simple_fsm_t * fsm, size_t * state);
+size_t simple_fsm_get_current_state(simple_fsm_t * fsm);
 
 /**
  *  @brief   Initialises the fsm based on config. If an already initialised fsm calls this, it will force a reset and may cause undefined behaviour.
@@ -76,36 +77,32 @@ error_t simple_fsm_get_current_state(simple_fsm_t * fsm, size_t * state);
  *  @param[in]  fsm - the fsm
  *  @param[in]  config - the configuration for this fsm
  * 
- *  @returns    ERR_NONE - success
- *              ERR_NULL_POINTER - a null pointer was found
+ *  @returns    ERR_NONE
+ *              ERR_NULL_POINTER
  *              ERR_INVALID_ARG - Config was invalid (if a unexpected NULL was found, returns ERR_NULL_POINTER instead)
  */
 error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config);
 
 /**
- *  @brief  Deinits the FSM. This invalidates the configuration and ensures that subsequent calls
- *          to any non init/deinit functions. Note this does not call the on exit of the current state. Sudden stops must be handled by the user.
+ *  @brief  Deinits the FSM. Note this does not call the on exit of the current state. Sudden stops must be handled by the user.
  * 
  *  @param[in]  fsm - the fsm
- * 
- *  @returns    ERR_NONE - success  
- *              ERR_NULL_POINTER - a null pointer was found  
  */
-error_t simple_fsm_deinit(simple_fsm_t * fsm);
+void simple_fsm_deinit(simple_fsm_t * fsm);
 
 /**
  *  @brief  Runs the FSM, note that any immediate state transitions are run in this context.
  *          This function essentially calls the On Entry for the initial state and propagates any states from there.
  *          This function should be called before any calls to on_event.
+ *          Function is idempotent.
  *  
  *  @note   Note this function may transition MANY states depending on the FSM provided.
  * 
  *  @param[in]  fsm - the fsm
  * 
- *  @returns    ERR_NONE - success
- *              ERR_NOT_INITIALISED - fsm not initialised
+ *  @returns    ERR_NONE
+ *              ERR_NOOP - Already started
  *              ERR_TIMEOUT - Max transitions reached, FSM may be in an unknown state and should be reset. (Something bad happened)
- *              ERR_NULL_POINTER - a null pointer was found
  *              ERR_OUT_OF_BOUNDS - a state requested a state outside of the bounds of the defined state machine
  */
 error_t simple_fsm_start(simple_fsm_t * fsm);
@@ -114,12 +111,12 @@ error_t simple_fsm_start(simple_fsm_t * fsm);
  *  @brief  Stops the FSM and attempts to call the on exit of the current state. This will not propagate transitions if the exit handler requests a transition.
  *          This is not part of the typical flow of the state machine, but may assist in helping with cleanup in the event of a shutdown. Note a force stop will deinitialise
  *          the state machine.
+ *          Function is idempotent.
  * 
  *  @param[in]  fsm - the fsm
  *
- *  @returns    ERR_NONE - success
- *              ERR_NOT_INITIALISED - fsm not initialised
- *              ERR_NULL_POINTER - a null pointer was found
+ *  @returns    ERR_NONE
+ *              ERR_NOOP - fsm was not started, so this function does nothing
  *              ERR_INCOMPLETE - The on exit handler requested another state other than itself. 
  */
 error_t simple_fsm_force_stop(simple_fsm_t * fsm);
@@ -132,10 +129,10 @@ error_t simple_fsm_force_stop(simple_fsm_t * fsm);
  *  @param[in]  fsm - the fsm
  *  @param[in]  event - the event to pass through as a pointer
  * 
- *  @returns    ERR_NONE - Everything went well
- *              ERR_NOT_INITIALISED - fsm was not initialised
+ *  @returns    ERR_NONE
+ *              ERR_NULL_POINTER
+ *              ERR_NOT_INITIALISED - fsm was not started
  *              ERR_TIMEOUT - Max transitions reached, FSM may be in an unknown state and should be reset. (Something bad happened)
- *              ERR_NULL_POINTER - a null pointer was found
  *              ERR_OUT_OF_BOUNDS - a state requested a state outside of the bounds of the defined state machine
  */
 error_t simple_fsm_on_event(simple_fsm_t * fsm, void const * event);

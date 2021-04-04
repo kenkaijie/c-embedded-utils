@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <cmocka.h>
 
-void mock_critical_section_get_interface(critical_section_t * interface, void * context)
+void mock_critical_section_as_critical_section(void * context, critical_section_t * interface)
 {
     interface->enter = mock_critical_section_enter;
     interface->exit = mock_critical_section_exit;
