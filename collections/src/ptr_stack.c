@@ -14,7 +14,8 @@ error_t ptr_stack_init(ptr_stack_t * stack, void ** stack_buffer, size_t stack_i
 
 void ptr_stack_deinit(ptr_stack_t * stack)
 {
-    mem_utils_fill_deadbeef(stack, sizeof(ptr_stack_t));
+    stack->m_max_item_count = 0;
+    stack->m_stack_top = 0;
 }
 
 size_t ptr_stack_get_remaining_count(ptr_stack_t * stack)
