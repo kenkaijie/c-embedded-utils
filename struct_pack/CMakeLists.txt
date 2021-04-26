@@ -1,8 +1,8 @@
 set(MODULE_NAME struct_pack)
 
-set(MODULE_SOURCES src/struct_pack.c)
+set(MODULE_SOURCES src/le_pack.c src/pack.c)
 set(MODULE_LINKS "")
-set(MODULE_TEST_SOURCES test/test_struct_pack.c test/test_vector3_example.c)
+set(MODULE_TEST_SOURCES test/test_le_pack.c test/test_pack.c)
 set(MODULE_TEST_RUNNER_SOURCES test_runner/test_struct_pack_main.c)
 
 add_c_embedded_module(

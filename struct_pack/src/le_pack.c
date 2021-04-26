@@ -1,11 +1,4 @@
-#include "struct_pack.h"
-
-bool pack_is_within_buffer(size_t offset, size_t req_size, size_t data_len)
-{
-    size_t required_index = offset + req_size;
-    // if the required index is less than the offset, we've looped and this MUST fail
-    return (required_index < offset) ? false : required_index <= data_len;
-}
+#include "le_pack.h"
 
 size_t le_pack_raw(uint8_t const * raw_data, size_t raw_data_size, size_t offset, uint8_t * data, size_t data_len)
 {
