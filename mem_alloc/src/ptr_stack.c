@@ -1,7 +1,5 @@
 #include "ptr_stack.h"
 
-#include "mem_utils.h"
-
 error_t ptr_stack_init(ptr_stack_t * stack, void ** stack_buffer, size_t stack_item_count)
 {
     if (stack_buffer == NULL) return ERR_NULL_POINTER;

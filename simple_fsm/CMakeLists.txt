@@ -1,7 +1,7 @@
 set(MODULE_NAME simple_fsm)
 
 set(MODULE_SOURCES src/simple_fsm.c)
-set(MODULE_LINKS error_codes mem_utils)
+set(MODULE_LINKS error_codes)
 set(MODULE_TEST_SOURCES test/test_simple_fsm.c test/mock_fsm.c)
 set(MODULE_TEST_RUNNER_SOURCES test_runner/test_simple_fsm_main.c)
 
