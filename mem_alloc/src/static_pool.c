@@ -1,7 +1,6 @@
 #include "static_pool.h"
 
 #include <string.h>
-#include "mem_utils.h"
 
 static inline void _lock_if_needed(static_pool_t * pool)
 {
@@ -64,7 +63,6 @@ error_t static_pool_init(static_pool_t * pool, static_pool_config_t const * conf
 void static_pool_deinit(static_pool_t * pool)
 {
     ptr_stack_deinit(&pool->m_free_stack);
-    mem_utils_fill_deadbeef(pool, sizeof(static_pool_t));
 }
 
 error_t static_pool_allocate(static_pool_t * pool, void ** token)

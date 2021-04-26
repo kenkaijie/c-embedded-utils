@@ -1,7 +1,6 @@
 #include "simple_fsm.h"
 
 #include <string.h>
-#include "mem_utils.h"
 
 static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state);
 
@@ -77,7 +76,8 @@ error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config)
 
 void simple_fsm_deinit(simple_fsm_t * fsm)
 {
-    mem_utils_fill_deadbeef(fsm, sizeof(simple_fsm_t));
+    fsm->m_state = fsm->m_config.initial_state;
+    fsm->m_started = false;
 }
 
 error_t simple_fsm_start(simple_fsm_t * fsm)

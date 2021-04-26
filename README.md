@@ -3,10 +3,10 @@
 [![codecov](https://codecov.io/gh/kenkaijie/c-embedded-utils/branch/master/graph/badge.svg?token=WY02IOEUE0)](https://codecov.io/gh/kenkaijie/c-embedded-utils)
 [![build](https://github.com/kenkaijie/c-embedded-utils/actions/workflows/ci_runner.yml/badge.svg?branch=master)](https://github.com/kenkaijie/c-embedded-utils/actions/workflows/ci_runner.yml)
 
-Just a collection of data structures and common architectural implementations I find myself using again and again on embedded systems. This repository just provides some additional rigor over the entire system. Providing a fully tested library.
+Just a collection of data structures and implementations I find myself using again and again on embedded systems. This repository just provides some additional rigor over the entire system. Providing a fully tested library for reuse.
 
 # Compiling
-Compiling as per the CI platform uses docker as a primary means of abstracting the build system. Simply define the absolute path to the root of this repository as `PROJECT_ROOT` and run the `build.sh` script.
+Compiling as per the CI platform uses docker for compilation. Simply define the absolute path to the root of this repository as `PROJECT_ROOT` and run the `build.sh` script.
 
 # General Info
 
@@ -31,25 +31,15 @@ This project contains options which allow for the triggering of different action
 Each module here provides a target for the specific component. All components provide a target, as well as a test target if tests are to be run on an embedded system.
 
 # Guidelines
-These are guidelines for coding up modules.
+These are guidelines for modules.
 
 ## User Assumptions
-Not every possible failure by the user can be accounted for. We can make the following assumption:
+Not every possible failure by the user can be accounted for.
 - Everything is statically allocated (many of the libraries have different forms if we consider dynamic memory)
 - Init is always called as the first function for any object. (I.e we can assume the user initialises the objects before actually using them)
 - Deinit is always the last call, and the user MUST call init before using any other functions.
 - Deinit will always succeed, and must have a void return signature (like a destructor).
-- Deinit should set memory to 0xDEADBEEF, repeated.
 - Null checking is not required for the object reference function. (this is to allow direct porting). It is the user's responsibility that the main object is not null. We can always assume the object pointer is always correct.
-
-## Objects should have a Init and Deinit function
-These acts as the constructor and the destructor. Should at the minimum return the following codes:
-
-For Init:
-
-- ERR_NONE - success
-- ERR_NULL_POINTER - a null pointer was found
-- ERR_INVALID_ARG - Config was invalid (if a unexpected NULL was found, returns ERR_NULL_POINTER instead)
 
 # Module Overviews
 If a module is added, ensure a small breif is placed here. The detailed functionality that cannot be explained in the function's inline documentation can fall in the module's root directory.
@@ -64,7 +54,7 @@ Base implementation of commonly used error codes within this library.
 A set of serialisation functions.
 
 ## Pubsub
-An event publishing implementation.
+An event publishing implementations.
 
 ## Collections
 A collection of static interfaces that are used in numerous modules.
