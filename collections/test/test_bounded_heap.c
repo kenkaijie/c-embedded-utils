@@ -93,6 +93,9 @@ static void test_safe_deinit(void ** state)
     assert_int_equal(ERR_EMPTY, ret);
 }
 
+/**
+ *  @brief  Generic scaffold to test the heap implementation here. So we can easily test different input orders without too much duplication.
+ */
 static void _max_heap_test_scaffold(void ** values, void ** heap_storage, void * min_value, size_t item_count)
 {
     error_t ret;
@@ -106,6 +109,7 @@ static void _max_heap_test_scaffold(void ** values, void ** heap_storage, void *
     ret = bounded_heap_init(&heap, &heap_cfg);
     assert_int_equal(ERR_NONE, ret);
 
+    // cant peek an empty heap
     void * dummy_peek;
     ret = bounded_heap_peek(&heap, &dummy_peek);
     assert_int_equal(ERR_EMPTY, ret);
@@ -130,6 +134,7 @@ static void _max_heap_test_scaffold(void ** values, void ** heap_storage, void *
         assert_int_equal(idx+1, heap_count);
     }
 
+    // cant push to a full heap
     ret = bounded_heap_push(&heap, (void *)0xDEADBEEF);
     assert_int_equal(ERR_NO_MEM, ret);
 
@@ -149,6 +154,7 @@ static void _max_heap_test_scaffold(void ** values, void ** heap_storage, void *
         assert_int_equal(idx+1, heap_remaining);
     }
 
+    // cant pop an empty heap
     void * dummy_pop;
     ret = bounded_heap_pop(&heap, &dummy_pop);
     assert_int_equal(ERR_EMPTY, ret);
