@@ -62,5 +62,5 @@ A collection of static interfaces that are used in numerous modules.
 ## Lock Primatives
 An interface for lock primatives. Used by certain low level data structures to ensure atomicity of actions.
 
-## Object Pool
-An implementation of an object pool. 
+## Mem Alloc
+Implementation of memory allocation objects (pools).
