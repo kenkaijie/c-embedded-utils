@@ -161,6 +161,11 @@ static void test_deinit_prevents_actions(void ** state)
     result = copy_queue_dequeue(&queue, &dummy);
     assert_int_equal(ERR_EMPTY, result);
 
+    size_t count = copy_queue_get_remaining(&queue);
+    assert_int_equal(0, count);
+
+    count = copy_queue_get_size(&queue);
+    assert_int_equal(0, count);
 }
 
 int test_copy_queue_run_tests(void)

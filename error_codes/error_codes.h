@@ -20,6 +20,7 @@ enum e_error_codes
     ERR_INCOMPLETE, /**< Function had to return early, but would have done more (used for indicating if an abort stopped prematurely) */
     ERR_EMPTY, /**< Typically for data structures, indicates there is no values within the collection. */
     ERR_NOT_FOUND, /**< Typically used for search functions to indicate an item was not found. */
+    ERR_OVERRIDE, /**< Indicates a value in a queue of buffer has been overidden, not an error, but may be of interest to the user. */
 };
 
 typedef uint32_t error_t;
