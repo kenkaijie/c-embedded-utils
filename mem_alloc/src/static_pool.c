@@ -2,32 +2,10 @@
 
 #include <string.h>
 
-static inline void _lock_if_needed(static_pool_t * pool)
-{
-    if (pool->m_config.use_lock)
-    {
-        critical_section_enter(&pool->m_config.critical_section);
-    }
-}
-
-static inline void _unlock_if_needed(static_pool_t * pool)
-{
-    if (pool->m_config.use_lock)
-    {
-        critical_section_exit(&pool->m_config.critical_section);
-    }
-}
-
 static inline error_t _validate_config(static_pool_config_t const * config)
 {
     if ((config->buffer == NULL) || (config->allocation_stack == 0)) return ERR_NULL_POINTER;
     if (config->buffer_size < (config->object_size * config->object_count)) return ERR_INVALID_ARG;
-    if (config->use_lock)
-    {
-        error_t ret;
-        ret = critical_section_validate_interface(&config->critical_section);
-        if (ret != ERR_NONE) return ret;
-    }
     return ERR_NONE;
 }
 
@@ -71,9 +49,7 @@ error_t static_pool_allocate(static_pool_t * pool, void ** token)
     void * temp_token = NULL;
     if (token == NULL) return ERR_NULL_POINTER;
 
-    _lock_if_needed(pool);
     ret = ptr_stack_pop(&pool->m_free_stack, &temp_token);
-    _unlock_if_needed(pool);
 
     if (ret == ERR_NONE)
     {
@@ -89,10 +65,8 @@ error_t static_pool_deallocate(static_pool_t * pool, void ** object_pointer)
     if (object_pointer == NULL) return ERR_NULL_POINTER;
     if (*object_pointer == NULL) return ERR_OUT_OF_BOUNDS;
 
-    _lock_if_needed(pool);
     // don't need to check, if the stack is full this must have been a bad value, just NULL the pointer and move on. User's responsibility for memory leakages.
     ptr_stack_push(&pool->m_free_stack, *object_pointer);
-    _unlock_if_needed(pool);
     *object_pointer = NULL;
 
     return ERR_NONE;

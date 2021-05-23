@@ -1,8 +1,8 @@
 set(MODULE_NAME mem_alloc)
 
-set(MODULE_SOURCES src/object_pool.c src/static_pool.c src/ptr_stack.c)
-set(MODULE_LINKS error_codes lock_primitives)
-set(MODULE_TEST_SOURCES test/test_object_pool.c test/test_static_pool.c test/mock_object_pool.c test/test_ptr_stack.c)
+set(MODULE_SOURCES src/object_pool.c src/static_pool.c)
+set(MODULE_LINKS error_codes lock_primitives collections)
+set(MODULE_TEST_SOURCES test/test_object_pool.c test/test_static_pool.c test/mock_object_pool.c)
 set(MODULE_TEST_LINKS test_lock_primitives)
 set(MODULE_TEST_RUNNER_SOURCES test_runner/test_mem_alloc_main.c)
 

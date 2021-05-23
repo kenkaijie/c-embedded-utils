@@ -42,7 +42,7 @@ Not every possible failure by the user can be accounted for.
 - Null checking is not required for the object reference function. (this is to allow direct porting). It is the user's responsibility that the main object is not null. We can always assume the object pointer is always correct.
 
 # Module Overviews
-If a module is added, ensure a small breif is placed here. The detailed functionality that cannot be explained in the function's inline documentation can fall in the module's root directory.
+If a module is added, ensure a small brief is placed here. The detailed functionality that cannot be explained in the function's inline documentation can fall in the module's root directory.
 
 ## Simple FSM
 A basic finite state machine runner.

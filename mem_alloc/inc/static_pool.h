@@ -22,8 +22,6 @@ struct s_static_pool_config
     size_t buffer_size; /**< Size of the buffer in bytes, note the object size must be an integer multiple of the object size. */
     size_t object_size; /**< Size of each object in bytes. */
     size_t object_count; /**< Number of objects this pool manages. Note that (object_size * object_count == buffer_size) */
-    bool use_lock; /**< Set this to true if you wish the critical section to be used. */
-    critical_section_t critical_section; /**< Optional interface to a critical section lock. If use_lock is set, this must be a valid lock interface. */
 };
 
 struct s_static_pool

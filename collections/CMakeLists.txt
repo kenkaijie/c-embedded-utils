@@ -1,8 +1,8 @@
 set(MODULE_NAME collections)
 
-set(MODULE_SOURCES src/bounded_heap.c)
-set(MODULE_LINKS error_codes)
-set(MODULE_TEST_SOURCES test/test_bounded_heap.c)
+set(MODULE_SOURCES src/bounded_heap.c src/ptr_stack.c src/circular_buffer.c src/copy_queue.c)
+set(MODULE_LINKS error_codes mem_alloc)
+set(MODULE_TEST_SOURCES test/test_bounded_heap.c test/test_ptr_stack.c test/test_copy_queue.c)
 set(MODULE_TEST_RUNNER_SOURCES test_runner/test_collections_main.c)
 
 add_c_embedded_module(
