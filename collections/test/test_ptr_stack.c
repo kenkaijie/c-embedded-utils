@@ -5,6 +5,7 @@
 #include <cmocka.h>
 
 #include "ptr_stack.h"
+#include "test_ptr_stack.h"
 
 static void test_interface_nulls(void ** state)
 {
