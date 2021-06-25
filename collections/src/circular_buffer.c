@@ -31,26 +31,24 @@ void circular_buffer_deinit(circular_buffer_t * buffer)
 
 error_t circular_buffer_push_byte(circular_buffer_t * buffer, uint8_t byte)
 {
-    bool override = false;
     if (buffer->m_buffer_max_size == 0) return ERR_NO_MEM;
     buffer->m_buffer[buffer->m_write_index] = byte;
     
     if ((buffer->m_write_index == buffer->m_read_index) && !buffer->m_buffer_is_empty)
     {
         buffer->m_read_index = (buffer->m_read_index + 1) % buffer->m_buffer_max_size;
-        override = true;
     }
 
     buffer->m_write_index = (buffer->m_write_index + 1) % buffer->m_buffer_max_size;
     buffer->m_buffer_is_empty = false;
 
-    return (override) ? ERR_OVERRIDE : ERR_NONE;
+    return ERR_NONE;
 }
 
 error_t circular_buffer_pop_byte(circular_buffer_t * buffer, uint8_t * byte)
 {
     if (byte == NULL) return ERR_NULL_POINTER;
-    if (circular_buffer_get_size(buffer) == 0) return ERR_EMPTY;
+    if (circular_buffer_get_count(buffer) == 0) return ERR_EMPTY;
 
     *byte = buffer->m_buffer[buffer->m_read_index];
     buffer->m_read_index = (buffer->m_read_index + 1) % buffer->m_buffer_max_size;
@@ -59,7 +57,7 @@ error_t circular_buffer_pop_byte(circular_buffer_t * buffer, uint8_t * byte)
     return ERR_NONE;
 }
 
-size_t circular_buffer_get_size(circular_buffer_t const * buffer)
+size_t circular_buffer_get_count(circular_buffer_t const * buffer)
 {
     size_t estimated_size;
 

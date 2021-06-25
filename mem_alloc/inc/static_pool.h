@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include "object_pool.h"
 #include "error_codes.h"
-#include "critical_section.h"
 #include "ptr_stack.h"
 
 typedef struct s_static_pool static_pool_t;
@@ -76,7 +75,7 @@ error_t static_pool_allocate(static_pool_t * pool, void ** object_ptr);
  *  @brief  Frees an object for reuse in the future. Note objects may not be zeroed when freed.
  * 
  *  @param[in] pool - The pointer to the static pool object
- *  @param[inout] object_ptr - The object to free back inot the pool. The pointer provided will return to NULL after freeing. Note the object provided should be 
+ *  @param[inout] object_ptr - The object to free back into the pool. The pointer provided will return to NULL after freeing. Note the object provided should be 
  * 
  *  @returns    ERR_NONE
  *              ERR_NULL_POINTER
