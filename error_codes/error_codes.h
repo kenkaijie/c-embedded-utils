@@ -1,7 +1,10 @@
 #pragma once
+
 /**
- *  @todo COnvert these to result codes, instead of error codes.
- */ 
+ *  @file   List of result and error codes used in all libraries that are part of this collection of utilities.
+ *          As a rule for this library, we use up to the first chunk of error codes in a particular application, with the remaining codes
+ *          to be used for application specific error codes.
+ */
 
 #include <stdint.h>
 
@@ -21,6 +24,8 @@ enum e_error_codes
     ERR_EMPTY, /**< Typically for data structures, indicates there is no values within the collection. */
     ERR_NOT_FOUND, /**< Typically used for search functions to indicate an item was not found. */
     ERR_OVERRIDE, /**< Indicates a value in a queue of buffer has been overidden, not an error, but may be of interest to the user. */
+    ERR_BUSY, /**< System is busy at this point to process the request (typically for non blocking functions) */
+    ERR_NOT_IMPLEMENTED, /**< Operation is not supported */
 };
 
 typedef uint32_t error_t;

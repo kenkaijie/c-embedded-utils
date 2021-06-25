@@ -5,7 +5,6 @@
 #include <cmocka.h>
 
 #include "static_pool.h"
-#include "mock_critical_section.h"
 
 typedef struct s_test_static_pool_dummy_data test_static_pool_dummy_data_t;
 
