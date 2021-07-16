@@ -1,10 +1,8 @@
-#pragma once
-
 /**
- * @brief   Structure packing for little and big endian. Provides interfacing prototypes for packable data structures.
- * 
- * @todo    Implement Big Endian
+ * @file
+ * @brief File containing functions for serialising primitive data types.
  */
+#pragma once
 
 #include <stdint.h>
 #include <string.h>

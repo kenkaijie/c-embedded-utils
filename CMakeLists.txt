@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.19)
 
 project(c_embedded_utils LANGUAGES C)
 
@@ -6,7 +6,6 @@ project(c_embedded_utils LANGUAGES C)
 option(C_EMB_UTILS_CFG_OWN_CMAKE "This project uses a target cmocka as the target for internal library testing. If your own cmocka is used, cmocka will be fetched from your provided target." OFF)
 option(C_EMB_UTILS_CFG_PRODUCE_UNIT_TESTS "Produces unit testing for library" ON)
 option(C_EMB_UTILS_CFG_COMPILE_WITH_COVERAGE "Adds coverage to all targets" ON)
-option(C_EMB_UTILS_CFG_BUILD_SHARED "Creates the shared library target, note static libs are always built." OFF)
 
 # Inclusions should be done after options are set.
 
@@ -30,8 +29,12 @@ add_subdirectory(extern)
 add_subdirectory(struct_pack)
 add_subdirectory(simple_fsm)
 add_subdirectory(error_codes)
-add_subdirectory(lock_primitives)
 add_subdirectory(mem_alloc)
 add_subdirectory(pubsub)
 add_subdirectory(collections)
 add_subdirectory(operations)
+
+add_custom_target(c_embedded_utils_dependency_graph ALL
+        COMMAND ${CMAKE_COMMAND} "--graphviz=cemb.dot" .
+        COMMAND dot -Tpng -o cemb_dependency_graph.png cemb.dot
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")

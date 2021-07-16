@@ -1,19 +1,22 @@
+/**
+ * @file
+ * @brief A queue with elements copied into the queue.
+ *
+ * Used for any application that needs queuing to prevent resource blocking.
+ * Similar to the a circular buffer, but with a capped size. Does not loop around.
+ *
+ * Uses a static memory pool under the hood, suitable mostly for larger objects.
+ */
 #pragma once
 
-/**
- *  @file   A queue with elements copied into the queue, Used for any application that needs queuing to prevent resource blocking.
- *          Similar to the a circular buffer, but with a capped size. Does not loop around.
- * 
- *          Uses a static memory pool under the hood, suitable mostly for larger objects.
- */
 #include <stddef.h>
 #include <stdint.h>
 #include "error_codes.h"
 
-typedef struct s_copy_queue copy_queue_t;
-typedef struct s_copy_queue_config copy_queue_config_t;
+typedef struct copy_queue copy_queue_t;
+typedef struct copy_queue_config copy_queue_config_t;
 
-struct s_copy_queue_config
+struct copy_queue_config
 {
     uint8_t * queue_buffer; /**< Additional stack internally needed to store the memory */
     size_t queue_size; /**< the total size of the queue in bytes, should be equal to the value element_count * element_size*/
@@ -21,7 +24,7 @@ struct s_copy_queue_config
     size_t element_size; /**< The number of elements in the queue */
 };
 
-struct s_copy_queue
+struct copy_queue
 {
     size_t m_count;
     size_t m_max_size;
@@ -32,21 +35,21 @@ struct s_copy_queue
 };
 
 /**
- *  @brief  Initialises a copy queue, which copies elements into the queue
+ * @brief  Initialises a copy queue, which copies elements into the queue
  * 
- *  @param[in] queue - the queue to use
- *  @param[in] config - the queue's configuration
+ * @param[in] queue - the queue to use
+ * @param[in] config - the queue's configuration
  * 
- *  @returns    ERR_NONE
- *              ERR_NULL_POINTER
- *              ERR_INVALID_ARG
+ * @retval #ERR_NONE
+ * @retval #ERR_NULL_POINTER
+ * @retval #ERR_INVALID_ARG
  */
 error_t copy_queue_init(copy_queue_t * queue, copy_queue_config_t const * config);
 
 /**
- *  @brief  Deinitialises a queue.
+ * @brief  Deinitialises a queue.
  * 
- *  @param[in] queue - the queue to use
+ * @param[in] queue - the queue to use
  */
 void copy_queue_deinit(copy_queue_t * queue);
 

@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-static inline error_t _validate_config(static_pool_config_t const * config)
+static inline error_t static_pool_validate_config(static_pool_config_t const * config)
 {
     if ((config->buffer == NULL) || (config->allocation_stack == 0)) return ERR_NULL_POINTER;
     if (config->buffer_size < (config->object_size * config->object_count)) return ERR_INVALID_ARG;
@@ -23,7 +23,7 @@ error_t static_pool_init(static_pool_t * pool, static_pool_config_t const * conf
 {
     error_t ret;
     if (config == NULL) return ERR_NULL_POINTER;
-    ret = _validate_config(config);
+    ret = static_pool_validate_config(config);
     if (ret != ERR_NONE) return ret;
 
     pool->m_config = *config;

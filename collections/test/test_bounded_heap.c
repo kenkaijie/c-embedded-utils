@@ -81,7 +81,7 @@ static void test_safe_deinit(void ** state)
 
     bounded_heap_deinit(&heap);
 
-    void * dummy;
+    void * dummy = NULL;
 
     ret = bounded_heap_push(&heap, dummy);
     assert_int_equal(ERR_NO_MEM, ret);
@@ -96,7 +96,7 @@ static void test_safe_deinit(void ** state)
 /**
  *  @brief  Generic scaffold to test the heap implementation here. So we can easily test different input orders without too much duplication.
  */
-static void _max_heap_test_scaffold(void ** values, void ** heap_storage, void * min_value, size_t item_count)
+static void test_max_heap_test_scaffold(void ** values, void ** heap_storage, void * min_value, size_t item_count)
 {
     error_t ret;
     bounded_heap_t heap;
@@ -166,7 +166,7 @@ static void test_ascending_max_heap(void ** state)
     void * values[HEAP_ITEM_COUNT] = {(void *)0, (void *)1, (void *)2, (void *)3, (void *)4, (void *)5, (void *)6, (void *)7, (void *)8, (void *)9};
     void * min_value = 0;
     void * heap_storage[HEAP_ITEM_COUNT];
-    _max_heap_test_scaffold(values, heap_storage, min_value, HEAP_ITEM_COUNT);
+    test_max_heap_test_scaffold(values, heap_storage, min_value, HEAP_ITEM_COUNT);
 }
 
 static void test_descending_max_heap(void ** state)
@@ -174,7 +174,7 @@ static void test_descending_max_heap(void ** state)
     void * values[HEAP_ITEM_COUNT] = {(void *)9, (void *)8, (void *)7, (void *)6, (void *)5, (void *)4, (void *)3, (void *)2, (void *)1, (void *)0};
     void * min_value = 0;
     void * heap_storage[HEAP_ITEM_COUNT];
-    _max_heap_test_scaffold(values, heap_storage, min_value, HEAP_ITEM_COUNT);
+    test_max_heap_test_scaffold(values, heap_storage, min_value, HEAP_ITEM_COUNT);
 }
 
 static void test_random_order_max_heap(void ** state)
@@ -182,7 +182,7 @@ static void test_random_order_max_heap(void ** state)
     void * values[HEAP_ITEM_COUNT] = {(void *)1230, (void *)5, (void *)99, (void *)3, (void *)0, (void *)6, (void *)22, (void *)0, (void *)5, (void *)5};
     void * min_value = 0;
     void * heap_storage[HEAP_ITEM_COUNT];
-    _max_heap_test_scaffold(values, heap_storage, min_value, HEAP_ITEM_COUNT);
+    test_max_heap_test_scaffold(values, heap_storage, min_value, HEAP_ITEM_COUNT);
 }
 
 

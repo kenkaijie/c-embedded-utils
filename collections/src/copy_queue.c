@@ -1,7 +1,7 @@
 #include "copy_queue.h"
-#include "string.h"
+#include <string.h>
 
-static error_t _validate_config(copy_queue_config_t const * config)
+static error_t copy_queue_validate_config(copy_queue_config_t const * config)
 {
     if (config->queue_buffer == NULL) return ERR_NULL_POINTER;
     if (config->element_size == 0) return ERR_INVALID_ARG;
@@ -14,7 +14,7 @@ static error_t _validate_config(copy_queue_config_t const * config)
 error_t copy_queue_init(copy_queue_t * queue, copy_queue_config_t const * config)
 {
     if (config == NULL) return ERR_NULL_POINTER;
-    error_t ret = _validate_config(config);
+    error_t ret = copy_queue_validate_config(config);
     if (ret != ERR_NONE) return ret;
 
     queue->m_buffer = config->queue_buffer;

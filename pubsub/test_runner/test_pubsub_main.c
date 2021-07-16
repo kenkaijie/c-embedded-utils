@@ -1,6 +1,8 @@
- #include "test_static_event_publisher.h"
+#include "test_static_event_publisher.h"
 
- int main(void)
- {
-     return test_static_event_publisher_run_tests();
- }
+int main(void)
+{
+    int result = 0;
+    result |= test_static_event_publisher_run_tests();
+    return result;
+}

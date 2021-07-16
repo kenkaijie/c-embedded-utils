@@ -147,7 +147,7 @@ static void test_deinit_prevents_actions(void ** state)
     };
     circular_buffer_t circular;
     error_t result;
-    uint8_t dummy;
+    uint8_t dummy = 0;
 
     circular_buffer_deinit(&circular);
 

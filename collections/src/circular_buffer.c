@@ -1,6 +1,6 @@
 #include "circular_buffer.h"
 
-error_t _validate_config(circular_buffer_config_t const * config)
+error_t circular_buffer_validate_config(circular_buffer_config_t const * config)
 {
     if (config->buffer == NULL) return ERR_NULL_POINTER;
     if (config->buffer_size == 0) return ERR_INVALID_ARG;
@@ -10,7 +10,7 @@ error_t _validate_config(circular_buffer_config_t const * config)
 error_t circular_buffer_init(circular_buffer_t * buffer, circular_buffer_config_t const * config)
 {
     if (config == NULL) return ERR_NULL_POINTER;
-    error_t result = _validate_config(config);
+    error_t result = circular_buffer_validate_config(config);
     if (result != ERR_NONE) return result;
     buffer->m_read_index = 0;
     buffer->m_write_index = 0;

@@ -87,7 +87,7 @@ static void test_correct_ordering_with_overflow(void ** state)
         result = fast_circular_buffer_push_byte(&circular, idx);
         assert_int_equal(ERR_NONE, result);
 
-        size_t buffer_size = fast_circular_buffer_get_count(&circular);
+        buffer_size = fast_circular_buffer_get_count(&circular);
         assert_int_equal(ITEMS_IN_TEST_BUFFER, buffer_size);
     }
 
@@ -161,7 +161,7 @@ static void test_deinit_prevents_actions(void ** state)
     };
     fast_circular_buffer_t circular;
     error_t result;
-    uint8_t dummy;
+    uint8_t dummy = 0;
 
     fast_circular_buffer_deinit(&circular);
 
