@@ -2,13 +2,13 @@
 
 #include <string.h>
 
-static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state);
+static error_t simple_fsm_resolve_transitions(simple_fsm_t * fsm, size_t next_state);
 
 /**
  *  @brief  Will keep traversing the Exit/Entry states until we settle at a state. Uses the FSM max loop count to 
  *          prevent infinite transitioning (if required).
  */
-static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state)
+static error_t simple_fsm_resolve_transitions(simple_fsm_t * fsm, size_t next_state)
 {
     simple_fsm_state_delegates_t const * handler;
     error_t ret;
@@ -41,7 +41,7 @@ static error_t _resolve_transitions(simple_fsm_t * fsm, size_t next_state)
  *  @brief  Validates the contents of the config, ensuring everything is within bounds. THis function reads like a ladder.
  *          If you make it to the end, you must be valid.
  */
-static error_t _validate_config(simple_fsm_config_t const * config)
+static error_t simple_fsm_validate_config(simple_fsm_config_t const * config)
 {
     if (config->state_delegates == NULL) return ERR_NULL_POINTER;
     if (config->state_count == 0) return ERR_INVALID_ARG;
@@ -65,7 +65,7 @@ error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config)
 {
     error_t ret;
     if (config == NULL) return ERR_NULL_POINTER;
-    ret = _validate_config(config);
+    ret = simple_fsm_validate_config(config);
     if (ret != ERR_NONE) return ret;
 
     fsm->m_config = *config;
@@ -88,7 +88,7 @@ error_t simple_fsm_start(simple_fsm_t * fsm)
     fsm->m_state = fsm->m_config.initial_state;
     simple_fsm_state_delegates_t const * handler = &fsm->m_config.state_delegates[fsm->m_state];
     size_t next_state = handler->on_entry_handler(fsm, fsm->m_config.context);
-    ret = _resolve_transitions(fsm, next_state);
+    ret = simple_fsm_resolve_transitions(fsm, next_state);
     if (ret != ERR_NONE)
     {
         fsm->m_started = false;
@@ -114,5 +114,5 @@ error_t simple_fsm_on_event(simple_fsm_t * fsm, void const * event)
     if (!fsm->m_started) return ERR_NOT_INITIALISED;
     simple_fsm_state_delegates_t const * handler = &fsm->m_config.state_delegates[fsm->m_state];
     size_t next_state = handler->on_event_handler(fsm, event, fsm->m_config.context);
-    return _resolve_transitions(fsm, next_state);
+    return simple_fsm_resolve_transitions(fsm, next_state);
 }

@@ -7,14 +7,14 @@
 #include "test_static_event_publisher.h"
 #include "static_event_publisher.h"
 
-static void publisher_callback_a(void const * event_data, void * context)
+static void publisher_callback_a(void * context, void const * event_data)
 {
     function_called();
     check_expected_ptr(event_data);
     check_expected_ptr(context);
 }
 
-static void publisher_callback_b(void const * event_data, void * context)
+static void publisher_callback_b(void * context, void const * event_data)
 {
     function_called();
     check_expected_ptr(event_data);
@@ -99,7 +99,7 @@ static void test_publisher(void ** state)
     ret = static_event_publisher_init(&pub, &pub_cfg);
     assert_int_equal(ret, ERR_NONE);
 
-    static_event_publisher_notify_subcribers(&pub, &int_event);
+    static_event_publisher_notify_subscribers(&pub, &int_event);
 
     static_event_publisher_deinit(&pub);
 
@@ -126,7 +126,7 @@ static void test_safe_deinit(void ** state)
     static_event_publisher_deinit(&pub);
 
     // by the nature of cmocka, if the function is called, an error is thrown because we do not expect it.
-    static_event_publisher_notify_subcribers(&pub, &int_event);
+    static_event_publisher_notify_subscribers(&pub, &int_event);
 
 }
 

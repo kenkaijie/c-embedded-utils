@@ -1,24 +1,27 @@
-#pragma once
-
 /**
- *  @file   Fast circular buffer, similar to the standard explicit buffer. 
+ * @file
+ * @brief Fast circular buffer, similar to the standard explicit buffer.
+ *
+ * Uses buffer sizes to a power of 2 to speed up arithmetic.
  */
+
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "error_codes.h"
 
-typedef struct s_fast_circular_buffer fast_circular_buffer_t;
-typedef struct s_fast_circular_buffer_config fast_circular_buffer_config_t;
+typedef struct fast_circular_buffer fast_circular_buffer_t;
+typedef struct fast_circular_buffer_config fast_circular_buffer_config_t;
 
-struct s_fast_circular_buffer_config 
+struct fast_circular_buffer_config
 {
     uint8_t * buffer;
-    size_t buffer_size; /**< buffer must be a power of 2 and greater than 1*/
+    size_t buffer_size; /**< Buffer size must be a power of 2 and greater than 1. */
 };
 
-struct s_fast_circular_buffer
+struct fast_circular_buffer
 {
     uint8_t * m_buffer;
     size_t m_read_index;
@@ -27,14 +30,14 @@ struct s_fast_circular_buffer
 };
 
 /**
- *  @brief  Initialises a circular byte buffer.
+ * @brief  Initialises a circular byte buffer.
  * 
- *  @param[in] buffer - the circular buffer
- *  @param[in] buffer_config - the configuration parameters to initialise with
+ * @param[in] buffer - the circular buffer
+ * @param[in] buffer_config - the configuration parameters to initialise with
  * 
- *  @returns    ERR_NONE
- *              ERR_NULL_POINTER
- *              ERR_INVALID_ARG
+ * @retval #ERR_NONE
+ * @retval #ERR_NULL_POINTER
+ * @retval #ERR_INVALID_ARG
  */
 error_t fast_circular_buffer_init(fast_circular_buffer_t * buffer, fast_circular_buffer_config_t const * buffer_config);
 

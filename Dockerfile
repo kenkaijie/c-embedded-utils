@@ -3,7 +3,9 @@ FROM gcc:9.3.0
 RUN apt-get update && apt-get install -y \ 
     cmake \
     python3-pip \
-    git-all \
+    graphviz \
+    doxygen \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install gcovr
