@@ -1,4 +1,4 @@
-if (NOT C_EMB_UTILS_CFG_OWN_CMAKE)
+if (NOT CEMB_CFG_OWN_CMAKE)
     # Overrides for configuring our internal CMOCKA
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
     set(WITH_CMOCKERY_SUPPORT OFF CACHE BOOL "Install a cmockery header" FORCE)
