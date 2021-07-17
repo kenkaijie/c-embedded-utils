@@ -2,24 +2,29 @@
 function(add_c_embedded_module)
 
 set(oneValueArgs NAME)
-set(multiValueArgs SOURCES LINKS TEST_SOURCES TEST_LINKS TEST_RUNNER_SOURCES TEST_RUNNER_LINKS)
+set(multiValueArgs SOURCES PRIVATE_LINKS PUBLIC_LINKS TEST_SOURCES TEST_LINKS TEST_RUNNER_SOURCES TEST_RUNNER_LINKS)
 
 cmake_parse_arguments(C_EMB_MODULE "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 add_library(${C_EMB_MODULE_NAME} STATIC)
 target_include_directories(${C_EMB_MODULE_NAME} PUBLIC inc)
 target_sources(${C_EMB_MODULE_NAME} PRIVATE ${C_EMB_MODULE_SOURCES})
-target_link_libraries(${C_EMB_MODULE_NAME} ${C_EMB_MODULE_LINKS} cemd_global_options)
+target_link_libraries(${C_EMB_MODULE_NAME} PRIVATE ${C_EMB_MODULE_PRIVATE_LINKS})
+target_link_libraries(${C_EMB_MODULE_NAME} PUBLIC ${C_EMB_MODULE_PUBLIC_LINKS})
 
-add_library(test_${C_EMB_MODULE_NAME} STATIC)
-target_include_directories(test_${C_EMB_MODULE_NAME} PUBLIC test)
-target_sources(test_${C_EMB_MODULE_NAME} PRIVATE ${C_EMB_MODULE_TEST_SOURCES})
-target_link_libraries(test_${C_EMB_MODULE_NAME} ${C_EMB_MODULE_NAME} cmocka cemd_global_options ${C_EMB_MODULE_TEST_LINKS})
+# add this to the aggregate library for cemb
+target_link_libraries(cemb PUBLIC ${C_EMB_MODULE_NAME})
 
 if (C_EMB_UTILS_CFG_PRODUCE_UNIT_TESTS)
     enable_testing()
+    add_library(test_${C_EMB_MODULE_NAME} STATIC)
+    target_include_directories(test_${C_EMB_MODULE_NAME} PUBLIC test)
+    target_sources(test_${C_EMB_MODULE_NAME} PRIVATE ${C_EMB_MODULE_TEST_SOURCES})
+    target_link_libraries(test_${C_EMB_MODULE_NAME} PRIVATE ${C_EMB_MODULE_NAME} cmocka::cmocka ${C_EMB_MODULE_TEST_LINKS})
+    # test executors should just have coverage on by default.
     add_executable(test_${C_EMB_MODULE_NAME}_main)
-    target_link_libraries(test_${C_EMB_MODULE_NAME}_main test_${C_EMB_MODULE_NAME} cemd_global_options ${C_EMB_MODULE_TEST_RUNNER_LINKS})
+    target_compile_options(test_${C_EMB_MODULE_NAME}_main PRIVATE --coverage -O0)
+    target_link_libraries(test_${C_EMB_MODULE_NAME}_main PRIVATE test_${C_EMB_MODULE_NAME} gcov ${C_EMB_MODULE_TEST_RUNNER_LINKS})
     target_sources(test_${C_EMB_MODULE_NAME}_main PRIVATE ${C_EMB_MODULE_TEST_RUNNER_SOURCES})
     add_test(test_${C_EMB_MODULE_NAME} test_${C_EMB_MODULE_NAME}_main)
 endif()
