@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include <stdint.h>
-
 enum error_codes
 {
     ERR_NONE = 0, /**< Success */
