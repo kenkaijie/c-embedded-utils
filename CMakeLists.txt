@@ -4,7 +4,7 @@ project(cemb LANGUAGES C)
 
 # Project Options
 option(CEMB_CFG_OWN_CMAKE "This project uses a target cmocka as the target for internal library testing. If your own cmocka is used, cmocka will be fetched from your provided target." OFF)
-option(CMB_CFG_PRODUCE_UNIT_TESTS "Produces unit testing for library" ON)
+option(CEMB_CFG_PRODUCE_UNIT_TESTS "Produces unit testing for library" ON)
 
 # Inclusions should be done after options are set.
 
@@ -20,14 +20,7 @@ endif()
 
 add_subdirectory(extern)
 
-# Add Modules here
-add_subdirectory(struct_pack)
-add_subdirectory(simple_fsm)
-add_subdirectory(error_codes)
-add_subdirectory(mem_alloc)
-add_subdirectory(pubsub)
-add_subdirectory(collections)
-add_subdirectory(operations)
+add_subdirectory(lib)
 
 add_custom_target(cemb_dependency_graph ALL
         COMMAND ${CMAKE_COMMAND} "--graphviz=cemb.dot" .

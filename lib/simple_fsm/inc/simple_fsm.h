@@ -26,9 +26,9 @@
 
 #include "error_codes.h"
 
-typedef struct s_simple_fsm_state_delegates simple_fsm_state_delegates_t;
-typedef struct s_simple_fsm simple_fsm_t;
-typedef struct s_simple_fsm_config simple_fsm_config_t;
+typedef struct simple_fsm_state_delegates simple_fsm_state_delegates_t;
+typedef struct simple_fsm simple_fsm_t;
+typedef struct simple_fsm_config simple_fsm_config_t;
 
 /**
  * @brief Function prototype for On Entry and On Exit functions used by the FSM.
@@ -56,14 +56,14 @@ typedef size_t(*simple_fsm_on_entry_exit_handler_t)(simple_fsm_t * fsm, void * c
  */
 typedef size_t(*simple_fsm_on_event_handler_t)(simple_fsm_t * fsm, void const * event, void * context);
 
-struct s_simple_fsm_state_delegates
+struct simple_fsm_state_delegates
 {
     simple_fsm_on_entry_exit_handler_t on_entry_handler;
     simple_fsm_on_event_handler_t on_event_handler;
     simple_fsm_on_entry_exit_handler_t on_exit_handler;
 };
 
-struct s_simple_fsm_config
+struct simple_fsm_config
 {
     void * context; /**< Context to call the state functions by. */
     simple_fsm_state_delegates_t const * state_delegates; /**< The pointer to the array of state function pointers. Must all be non null. */
@@ -72,7 +72,7 @@ struct s_simple_fsm_config
     size_t max_transition_count; /**< The maximum transitions any single event can trigger before returning. This prevents endless transitioning between the On Entry/On Exit states in the event of some catastrophic failure on a state machine with connected/strongly connected states. */
 };
 
-struct s_simple_fsm
+struct simple_fsm
 {
     bool m_started;
     simple_fsm_config_t m_config;

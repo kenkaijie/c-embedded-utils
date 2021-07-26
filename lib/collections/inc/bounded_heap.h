@@ -14,7 +14,7 @@
 
 #include "error_codes.h"
 
-typedef struct bounded_heap_cfg bounded_heap_cfg_t;
+typedef struct bounded_heap_config bounded_heap_config_t;
 typedef struct bounded_heap bounded_heap_t;
 /**
  * @brief  Compare function for the bounded heap.
@@ -30,14 +30,14 @@ typedef struct bounded_heap bounded_heap_t;
  */
 typedef bool(*bounded_heap_compare_func_t)(void const * const parent, void const * const child);
 
-struct bounded_heap_cfg {
+struct bounded_heap_config {
     void ** heap_storage;
     size_t element_count;
     bounded_heap_compare_func_t compare;
 };
 
 struct bounded_heap {
-    bounded_heap_cfg_t m_config;
+    bounded_heap_config_t m_config;
     size_t m_items_in_heap;
     size_t m_heap_max_size; /**< for correct deinit, we use this to determine the actual max item size of the heap. */
 };
@@ -52,7 +52,7 @@ struct bounded_heap {
  * @retval #ERR_NULL_POINTER
  * @retval #ERR_INVALID_ARG
  */
-error_t bounded_heap_init(bounded_heap_t * heap, bounded_heap_cfg_t const * config);
+error_t bounded_heap_init(bounded_heap_t * heap, bounded_heap_config_t const * config);
 
 /**
  * @brief  Deinitialises the heap.
