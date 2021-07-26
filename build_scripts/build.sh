@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-if [ -n $CEMB_UTILS_DEV_ENV ]; then
+if [[ -n $CEMB_UTILS_DEV_ENV ]]; then
     echo "Don't run this in your docker, run the script used inside the build environment instead."
     exit 1
 fi
 
-if [ -z $PROJECT_ROOT ]; then
+if [[ -z $PROJECT_ROOT ]]; then
     echo "Please define PROJECT_ROOT as the absolute path to the root of this repository."
     echo "If you are already in the root folder, calling 'export PROJECT_ROOT=$(pwd)' suffices."
     exit 1

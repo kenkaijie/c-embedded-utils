@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# This file is to be called WITHIN the dev env context. It performs this by checking the tag set by the dockerfile (C_EMB_UTILS_DEV_ENV)
+# This file is to be called WITHIN the dev env context. It performs this by checking the tag set by the dockerfile (CEMB_UTILS_DEV_ENV)
 
 set -e
 
-if [ -z $CEMB_UTILS_DEV_ENV ]; then
+if [[ -z $CEMB_UTILS_DEV_ENV ]]; then
     echo "Please run this in the appropriate development environment (i.e docker, or manually set up)"
     exit 1
 fi
