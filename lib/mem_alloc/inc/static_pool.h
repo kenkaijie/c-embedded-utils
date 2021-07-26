@@ -8,6 +8,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
 #include "object_pool.h"
 #include "error_codes.h"
 #include "ptr_stack.h"
