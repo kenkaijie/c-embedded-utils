@@ -7,7 +7,7 @@
 #include "test_bounded_heap.h"
 #include "bounded_heap.h"
 
-#define HEAP_ITEM_COUNT 10
+#define HEAP_ITEM_COUNT (10)
 
 /**
  *  @brief  For a max heap (root is max), we need to trigger a swap if the parent if less than the child. 
@@ -40,7 +40,7 @@ static void test_bad_init(void ** state)
     error_t ret;
     void * heap_storage[HEAP_ITEM_COUNT];
     bounded_heap_t heap;
-    bounded_heap_cfg_t heap_cfg = {
+    bounded_heap_config_t heap_cfg = {
         .heap_storage = heap_storage,
         .element_count = HEAP_ITEM_COUNT,
         .compare = max_heap_compare
@@ -63,14 +63,14 @@ static void test_bad_init(void ** state)
 }
 
 /**
- * @brief   Test that a deinit'd heap will always return failure values for each API call
+ * @brief   Test that a de initialised heap will always return failure values for each API call
  */ 
 static void test_safe_deinit(void ** state)
 {
     error_t ret;
     void * heap_storage[HEAP_ITEM_COUNT];
     bounded_heap_t heap;
-    bounded_heap_cfg_t heap_cfg = {
+    bounded_heap_config_t heap_cfg = {
         .heap_storage = heap_storage,
         .element_count = HEAP_ITEM_COUNT,
         .compare = max_heap_compare
@@ -100,7 +100,7 @@ static void test_max_heap_test_scaffold(void ** values, void ** heap_storage, vo
 {
     error_t ret;
     bounded_heap_t heap;
-    bounded_heap_cfg_t heap_cfg = {
+    bounded_heap_config_t heap_cfg = {
         .heap_storage = heap_storage,
         .element_count = item_count,
         .compare = max_heap_compare

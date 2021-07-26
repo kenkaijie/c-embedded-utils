@@ -15,7 +15,7 @@ target_link_libraries(${C_EMB_MODULE_NAME} PUBLIC ${C_EMB_MODULE_PUBLIC_LINKS})
 # add this to the aggregate library for cemb
 target_link_libraries(cemb PUBLIC ${C_EMB_MODULE_NAME})
 
-if (C_EMB_UTILS_CFG_PRODUCE_UNIT_TESTS)
+if (CEMB_CFG_PRODUCE_UNIT_TESTS)
     enable_testing()
     add_library(test_${C_EMB_MODULE_NAME} STATIC)
     target_include_directories(test_${C_EMB_MODULE_NAME} PUBLIC test)

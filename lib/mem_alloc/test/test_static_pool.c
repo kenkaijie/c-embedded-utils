@@ -6,9 +6,9 @@
 
 #include "static_pool.h"
 
-typedef struct s_test_static_pool_dummy_data test_static_pool_dummy_data_t;
+typedef struct test_static_pool_dummy_data test_static_pool_dummy_data_t;
 
-struct s_test_static_pool_dummy_data
+struct test_static_pool_dummy_data
 {
     uint8_t param_a;
     uint32_t param_b;

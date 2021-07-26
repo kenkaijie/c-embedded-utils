@@ -1,6 +1,6 @@
 #include "bounded_heap.h"
 
-static error_t bounded_heap_validate_config(bounded_heap_cfg_t const * config)
+static error_t bounded_heap_validate_config(bounded_heap_config_t const * config)
 {
     if (config->heap_storage == NULL) return ERR_NULL_POINTER;
     if (config->compare == NULL) return ERR_NULL_POINTER;
@@ -43,7 +43,7 @@ static void * bounded_heap_get_value_at(bounded_heap_t * heap, size_t index)
     return heap->m_config.heap_storage[index];
 }
 
-error_t bounded_heap_init(bounded_heap_t * heap, bounded_heap_cfg_t const * config)
+error_t bounded_heap_init(bounded_heap_t * heap, bounded_heap_config_t const * config)
 {
     if (config == NULL) return ERR_NULL_POINTER;
     error_t ret = bounded_heap_validate_config(config);
