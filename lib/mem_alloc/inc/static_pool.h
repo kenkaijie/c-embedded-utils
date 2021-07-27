@@ -2,7 +2,7 @@
  * @file
  * @brief A statically allocated object pool (no expansion possible).
  *
- * Does not take into account threaded operations, as this pool does not lock. FOr thread safety, a shim must be applied
+ * Does not take into account threaded operations, as this pool does not lock. For thread safety, a shim must be applied
  * over this to ensure correct operation.
  */
 #pragma once

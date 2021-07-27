@@ -11,7 +11,9 @@ fi
 
 # build
 mkdir -p ${PROJECT_ROOT}/build_temp
+
 pushd ${PROJECT_ROOT}/build_temp
+
 cmake ..
 cmake --build .
 
