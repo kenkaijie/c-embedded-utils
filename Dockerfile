@@ -11,5 +11,5 @@ RUN apt-get update && apt-get install -y \
 RUN pip3 install gcovr
 
 ENV CEMB_UTILS_DEV_ENV=1
-
-ENTRYPOINT [ "/bin/bash", "-c" ]
+# Needed to run doxygen properly
+ENV PLANTUML_JAR_PATH=/usr/share/plantuml/plantuml.jar

@@ -16,4 +16,5 @@ DOCKER_PROJECT_ROOT="/usr/project"
 
 docker build -t c-embedded-utils -f ${PROJECT_ROOT}/Dockerfile ${PROJECT_ROOT}
 # bind our project root to the internal project root, then set PROJECT_ROOT as the internal
-docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="${DOCKER_PROJECT_ROOT}" c-embedded-utils "export PROJECT_ROOT=${DOCKER_PROJECT_ROOT} && /bin/bash \${PROJECT_ROOT}/build_scripts/dev_env_build.sh"
+docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="${DOCKER_PROJECT_ROOT}" c-embedded-utils \
+bash -c "export PROJECT_ROOT=${DOCKER_PROJECT_ROOT} && ${DOCKER_PROJECT_ROOT}/build_scripts/dev_env_build.sh"

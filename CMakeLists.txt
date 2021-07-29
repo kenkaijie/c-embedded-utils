@@ -21,8 +21,3 @@ endif()
 add_subdirectory(extern)
 
 add_subdirectory(lib)
-
-add_custom_target(cemb_dependency_graph ALL
-        COMMAND ${CMAKE_COMMAND} "--graphviz=cemb.dot" .
-        COMMAND dot -Tpng -o cemb_dependency_graph.png cemb.dot
-        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")

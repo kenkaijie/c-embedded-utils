@@ -9,6 +9,12 @@ if [[ -z $CEMB_UTILS_DEV_ENV ]]; then
     exit 1
 fi
 
+if [[ -z $PROJECT_ROOT ]]; then
+    echo "Please define PROJECT_ROOT as the absolute path to the root of this repository."
+    echo "If you are already in the root folder, calling 'export PROJECT_ROOT=$(pwd)' suffices."
+    exit 1
+fi
+
 # build
 mkdir -p ${PROJECT_ROOT}/build_temp
 
