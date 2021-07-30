@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 # Runs the doxygen file generation for this project
 
