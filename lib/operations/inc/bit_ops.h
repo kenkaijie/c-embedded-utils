@@ -12,7 +12,7 @@
  * 
  * For example, 0b11100 has a hamming weight of 3.
  * 
- * @param i
+ * @param[in] i
  *
  * @returns The hamming weight of the i argument.
  */

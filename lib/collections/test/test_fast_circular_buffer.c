@@ -12,27 +12,15 @@
 #define ITEMS_IN_TEST_BUFFER (16)
 #define ITEMS_IN_RIPPLE_INSERT (16)
 
-static void test_interface_nulls(void ** state)
-{
-    error_t result;
-    fast_circular_buffer_t circular;
-
-    result = fast_circular_buffer_init(&circular, NULL);
-    assert_int_equal(ERR_NULL_POINTER, result);
-
-    result = fast_circular_buffer_pop_byte(&circular, NULL);
-    assert_int_equal(ERR_NULL_POINTER, result);
-}
-
 static void test_ripple_insert(void ** state)
 {
     static uint8_t buffer[ITEMS_IN_RIPPLE_INSERT];
-    fast_circular_buffer_config_t config = {
+    FastCircularBufferConfig_t config = {
         .buffer = buffer,
         .buffer_size = ITEMS_IN_RIPPLE_INSERT,
     };
-    fast_circular_buffer_t circular;
-    error_t result;
+    FastCircularBuffer_t circular;
+    ErrorCode_t result;
 
     result = fast_circular_buffer_init(&circular, &config);
     assert_int_equal(ERR_NONE, result);
@@ -59,12 +47,12 @@ static void test_ripple_insert(void ** state)
 static void test_correct_ordering_with_overflow(void ** state)
 {
     static uint8_t buffer[ITEMS_IN_TEST_BUFFER];
-    fast_circular_buffer_config_t config = {
+    FastCircularBufferConfig_t config = {
         .buffer = buffer,
         .buffer_size = ITEMS_IN_TEST_BUFFER,
     };
-    fast_circular_buffer_t circular;
-    error_t result;
+    FastCircularBuffer_t circular;
+    ErrorCode_t result;
 
     result = fast_circular_buffer_init(&circular, &config);
     assert_int_equal(ERR_NONE, result);
@@ -123,18 +111,13 @@ static void test_correct_ordering_with_overflow(void ** state)
 static void test_bad_config(void ** state)
 {
     static uint8_t buffer[ITEMS_IN_TEST_BUFFER];
-    fast_circular_buffer_config_t config = {
+    FastCircularBufferConfig_t config = {
         .buffer = buffer,
         .buffer_size = ITEMS_IN_TEST_BUFFER,
     };
-    fast_circular_buffer_t circular;
-    error_t result;
-    fast_circular_buffer_config_t test_config = config;
-
-    test_config = config;
-    test_config.buffer = NULL;
-    result = fast_circular_buffer_init(&circular, &test_config);
-    assert_int_equal(ERR_NULL_POINTER, result);
+    FastCircularBuffer_t circular;
+    ErrorCode_t result;
+    FastCircularBufferConfig_t test_config = config;
 
     test_config = config;
     test_config.buffer_size = 0;
@@ -155,12 +138,12 @@ static void test_bad_config(void ** state)
 static void test_deinit_prevents_actions(void ** state)
 {
     static uint8_t buffer[ITEMS_IN_TEST_BUFFER];
-    fast_circular_buffer_config_t config = {
+    FastCircularBufferConfig_t config = {
         .buffer = buffer,
         .buffer_size = ITEMS_IN_TEST_BUFFER,
     };
-    fast_circular_buffer_t circular;
-    error_t result;
+    FastCircularBuffer_t circular;
+    ErrorCode_t result;
     uint8_t dummy = 0;
 
     fast_circular_buffer_deinit(&circular);
@@ -180,7 +163,6 @@ static void test_deinit_prevents_actions(void ** state)
 int test_fast_circular_buffer_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_interface_nulls),
         cmocka_unit_test(test_ripple_insert),
         cmocka_unit_test(test_correct_ordering_with_overflow),
         cmocka_unit_test(test_bad_config),

@@ -1,77 +1,90 @@
 #include "circular_buffer.h"
 
-error_t circular_buffer_validate_config(circular_buffer_config_t const * config)
+#include <assert.h>
+
+ErrorCode_t circular_buffer_validate_config(CircularBufferConfig_t const * config)
 {
-    if (config->buffer == NULL) return ERR_NULL_POINTER;
+    assert(config->buffer);
+
     if (config->buffer_size == 0) return ERR_INVALID_ARG;
     return ERR_NONE;
 }
 
-error_t circular_buffer_init(circular_buffer_t * buffer, circular_buffer_config_t const * config)
+ErrorCode_t circular_buffer_init(CircularBuffer_t * buffer, CircularBufferConfig_t const * config)
 {
-    if (config == NULL) return ERR_NULL_POINTER;
-    error_t result = circular_buffer_validate_config(config);
+    assert(buffer);
+    assert(config);
+
+    ErrorCode_t result = circular_buffer_validate_config(config);
     if (result != ERR_NONE) return result;
-    buffer->m_read_index = 0;
-    buffer->m_write_index = 0;
-    buffer->m_buffer_is_empty = true;
-    buffer->m_buffer = config->buffer;
-    buffer->m_buffer_max_size = config->buffer_size;
+    buffer->read_index = 0;
+    buffer->write_index = 0;
+    buffer->buffer_is_empty = true;
+    buffer->buffer = config->buffer;
+    buffer->buffer_max_size = config->buffer_size;
 
     return ERR_NONE;
 }
 
-void circular_buffer_deinit(circular_buffer_t * buffer)
+void circular_buffer_deinit(CircularBuffer_t * buffer)
 {
-    buffer->m_buffer_max_size = 0;
-    buffer->m_read_index = 0;
-    buffer->m_write_index = 0;
-    buffer->m_buffer_is_empty = true;
+    assert(buffer);
+
+    buffer->buffer_max_size = 0;
+    buffer->read_index = 0;
+    buffer->write_index = 0;
+    buffer->buffer_is_empty = true;
 }
 
-error_t circular_buffer_push_byte(circular_buffer_t * buffer, uint8_t byte)
+ErrorCode_t circular_buffer_push_byte(CircularBuffer_t * buffer, uint8_t byte)
 {
-    if (buffer->m_buffer_max_size == 0) return ERR_NO_MEM;
-    buffer->m_buffer[buffer->m_write_index] = byte;
+    assert(buffer);
+
+    if (buffer->buffer_max_size == 0) return ERR_NO_MEM;
+    buffer->buffer[buffer->write_index] = byte;
     
-    if ((buffer->m_write_index == buffer->m_read_index) && !buffer->m_buffer_is_empty)
+    if ((buffer->write_index == buffer->read_index) && !buffer->buffer_is_empty)
     {
-        buffer->m_read_index = (buffer->m_read_index + 1) % buffer->m_buffer_max_size;
+        buffer->read_index = (buffer->read_index + 1) % buffer->buffer_max_size;
     }
 
-    buffer->m_write_index = (buffer->m_write_index + 1) % buffer->m_buffer_max_size;
-    buffer->m_buffer_is_empty = false;
+    buffer->write_index = (buffer->write_index + 1) % buffer->buffer_max_size;
+    buffer->buffer_is_empty = false;
 
     return ERR_NONE;
 }
 
-error_t circular_buffer_pop_byte(circular_buffer_t * buffer, uint8_t * byte)
+ErrorCode_t circular_buffer_pop_byte(CircularBuffer_t * buffer, uint8_t * byte)
 {
-    if (byte == NULL) return ERR_NULL_POINTER;
+    assert(buffer);
+    assert(byte);
+
     if (circular_buffer_get_count(buffer) == 0) return ERR_EMPTY;
 
-    *byte = buffer->m_buffer[buffer->m_read_index];
-    buffer->m_read_index = (buffer->m_read_index + 1) % buffer->m_buffer_max_size;
-    buffer->m_buffer_is_empty = (buffer->m_read_index == buffer->m_write_index);
+    *byte = buffer->buffer[buffer->read_index];
+    buffer->read_index = (buffer->read_index + 1) % buffer->buffer_max_size;
+    buffer->buffer_is_empty = (buffer->read_index == buffer->write_index);
 
     return ERR_NONE;
 }
 
-size_t circular_buffer_get_count(circular_buffer_t const * buffer)
+size_t circular_buffer_get_count(CircularBuffer_t const * buffer)
 {
+    assert(buffer);
+    
     size_t estimated_size;
 
-    if(buffer->m_write_index > buffer->m_read_index)
+    if(buffer->write_index > buffer->read_index)
     {
-        estimated_size = buffer->m_write_index - buffer->m_read_index;
+        estimated_size = buffer->write_index - buffer->read_index;
     }
-    else if (buffer->m_write_index < buffer->m_read_index)
+    else if (buffer->write_index < buffer->read_index)
     {
-        estimated_size = buffer->m_buffer_max_size - buffer->m_read_index + buffer->m_write_index;
+        estimated_size = buffer->buffer_max_size - buffer->read_index + buffer->write_index;
     }
     else
     {
-        estimated_size = (buffer->m_buffer_is_empty) ? 0 : buffer->m_buffer_max_size;
+        estimated_size = (buffer->buffer_is_empty) ? 0 : buffer->buffer_max_size;
     }
 
     return estimated_size;

@@ -7,29 +7,23 @@
 #include "ptr_stack.h"
 #include "test_ptr_stack.h"
 
-static void test_interface_nulls(void ** state)
+static void test_bad_init(void ** state)
 {
-    ptr_stack_t stack;
+    PtrStack_t stack;
     void * stack_buffer[15];
     size_t stack_item_count = 15;
-    error_t ret;
-
-    ret = ptr_stack_init(&stack, NULL, stack_item_count);
-    assert_int_equal(ERR_NULL_POINTER, ret);
+    ErrorCode_t ret;
 
     ret = ptr_stack_init(&stack, stack_buffer, 0);
     assert_int_equal(ERR_INVALID_ARG, ret);
-
-    ret = ptr_stack_pop(&stack, NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
 }
 
 static void test_insert(void ** state)
 {
-    ptr_stack_t stack;
+    PtrStack_t stack;
     void * stack_buffer[4];
     size_t stack_item_count = 4;
-    error_t ret;
+    ErrorCode_t ret;
     void * value;
 
     ret = ptr_stack_init(&stack, stack_buffer, stack_item_count);
@@ -79,7 +73,7 @@ static void test_insert(void ** state)
 int test_ptr_stack_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_interface_nulls),
+        cmocka_unit_test(test_bad_init),
         cmocka_unit_test(test_insert),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);

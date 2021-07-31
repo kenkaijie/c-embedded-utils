@@ -26,9 +26,9 @@
 
 #include "error_codes.h"
 
-typedef struct simple_fsm_state_delegates simple_fsm_state_delegates_t;
-typedef struct simple_fsm simple_fsm_t;
-typedef struct simple_fsm_config simple_fsm_config_t;
+typedef struct SimpleFSMStateDelegates SimpleFSMStateDelegates_t;
+typedef struct SimpleFSM SimpleFSM_t;
+typedef struct SimpleFSMConfig SimpleFSMConfig_t;
 
 /**
  * @brief Function prototype for On Entry and On Exit functions used by the FSM.
@@ -43,7 +43,7 @@ typedef struct simple_fsm_config simple_fsm_config_t;
  *
  * @returns The next state to transition to, or the value of the current state to indicate execution without errors.
  */
-typedef size_t(*simple_fsm_on_entry_exit_handler_t)(simple_fsm_t * fsm, void * context);
+typedef size_t(*SimpleFSMOnEntryExitFunction_t)(SimpleFSM_t * fsm, void * context);
 
 /**
  * @brief Function called when the fsm is given an event.
@@ -54,30 +54,36 @@ typedef size_t(*simple_fsm_on_entry_exit_handler_t)(simple_fsm_t * fsm, void * c
  *
  * @returns The next state to transition to, or the value of the current state to stay.
  */
-typedef size_t(*simple_fsm_on_event_handler_t)(simple_fsm_t * fsm, void const * event, void * context);
+typedef size_t(*SimpleFSMOnEventFunction_t)(SimpleFSM_t * fsm, void const * event, void * context);
 
-struct simple_fsm_state_delegates
+struct SimpleFSMStateDelegates
 {
-    simple_fsm_on_entry_exit_handler_t on_entry_handler;
-    simple_fsm_on_event_handler_t on_event_handler;
-    simple_fsm_on_entry_exit_handler_t on_exit_handler;
+    SimpleFSMOnEntryExitFunction_t on_entry_handler;
+    SimpleFSMOnEventFunction_t on_event_handler;
+    SimpleFSMOnEntryExitFunction_t on_exit_handler;
 };
 
-struct simple_fsm_config
+/**
+ * @class SimpleFSMConfig
+ */
+struct SimpleFSMConfig
 {
     void * context; /**< Context to call the state functions by. */
-    simple_fsm_state_delegates_t const * state_delegates; /**< The pointer to the array of state function pointers. Must all be non null. */
+    SimpleFSMStateDelegates_t const * state_delegates; /**< The pointer to the array of state function pointers. Must all be non null. */
     size_t state_count; /**< The number of states. */
     size_t initial_state; /**< The initial state whose On Entry will be called when the FSM starts */
     size_t max_transition_count; /**< The maximum transitions any single event can trigger before returning. This prevents endless transitioning between the On Entry/On Exit states in the event of some catastrophic failure on a state machine with connected/strongly connected states. */
 };
 
-struct simple_fsm
+/**
+ * @class SimpleFSM
+ */
+struct SimpleFSM
 {
-    bool m_started;
-    simple_fsm_config_t m_config;
-    size_t m_state;
-    size_t m_loop_count;
+    bool started;
+    SimpleFSMConfig_t config;
+    size_t state;
+    size_t loop_count;
 };
 
 /**
@@ -87,8 +93,10 @@ struct simple_fsm
  * @param[out] state - the state, only valid to use if function returns ERR_NONE.
  *                  
  * @returns The current state of the system. If the state machine is not running, this will return the last known state.
+ * 
+ * @memberof SimpleFSM
  */
-size_t simple_fsm_get_current_state(simple_fsm_t * fsm);
+size_t simple_fsm_get_current_state(SimpleFSM_t * fsm);
 
 /**
  * @brief   Initialises the fsm based on config. If an already initialised fsm calls this, it will force a reset and may cause undefined behaviour.
@@ -97,17 +105,20 @@ size_t simple_fsm_get_current_state(simple_fsm_t * fsm);
  * @param[in] config - the configuration for this fsm
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_INVALID_ARG - Config was invalid (if a unexpected NULL was found, returns ERR_NULL_POINTER instead)
+ * 
+ * @memberof SimpleFSM
  */
-error_t simple_fsm_init(simple_fsm_t * fsm, simple_fsm_config_t const * config);
+ErrorCode_t simple_fsm_init(SimpleFSM_t * fsm, SimpleFSMConfig_t const * config);
 
 /**
  * @brief  Deinits the FSM. Note this does not call the on exit of the current state. Sudden stops must be handled by the user.
  * 
  * @param[in] fsm - The fsm
+ * 
+ * @memberof SimpleFSM
  */
-void simple_fsm_deinit(simple_fsm_t * fsm);
+void simple_fsm_deinit(SimpleFSM_t * fsm);
 
 /**
  * @brief Runs the FSM, note that any immediate state transitions are run in this context.
@@ -124,8 +135,10 @@ void simple_fsm_deinit(simple_fsm_t * fsm);
  * @retval #ERR_NOOP - Already started
  * @retval #ERR_TIMEOUT - Max transitions reached, FSM may be in an unknown state and should be reset. (Something bad happened)
  * @retval #ERR_OUT_OF_BOUNDS - a state requested a state outside of the bounds of the defined state machine
+ * 
+ * @memberof SimpleFSM
  */
-error_t simple_fsm_start(simple_fsm_t * fsm);
+ErrorCode_t simple_fsm_start(SimpleFSM_t * fsm);
 
 /**
  * @brief Stops the FSM and attempts to call the on exit of the current state. This will not propagate transitions if the exit handler requests a transition.
@@ -139,8 +152,10 @@ error_t simple_fsm_start(simple_fsm_t * fsm);
  * @retval #ERR_NONE
  * @retval #ERR_NOOP - fsm was not started, so this function does nothing
  * @retval #ERR_INCOMPLETE - The on exit handler requested another state other than itself.
+ * 
+ * @memberof SimpleFSM
  */
-error_t simple_fsm_force_stop(simple_fsm_t * fsm);
+ErrorCode_t simple_fsm_force_stop(SimpleFSM_t * fsm);
 
 /**
  * @brief Passes the event to the fsm, which will act on the fsm.
@@ -148,12 +163,13 @@ error_t simple_fsm_force_stop(simple_fsm_t * fsm);
  * @note Note this function may transition MANY states depending on the FSM provided. Limited by the FSM's max transition setting.
  * 
  * @param[in] fsm - the fsm
- * @param[in] event - the event to pass through as a pointer
+ * @param[in] event - the event to pass through as a pointer, can be NULL.
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_NOT_INITIALISED - fsm was not started
  * @retval #ERR_TIMEOUT - Max transitions reached, FSM may be in an unknown state and should be reset. (Something bad happened)
  * @retval #ERR_OUT_OF_BOUNDS - a state requested a state outside of the bounds of the defined state machine
+ * 
+ * @memberof SimpleFSM
  */
-error_t simple_fsm_on_event(simple_fsm_t * fsm, void const * event);
+ErrorCode_t simple_fsm_on_event(SimpleFSM_t * fsm, void const * event);

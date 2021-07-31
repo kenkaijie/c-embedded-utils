@@ -9,19 +9,35 @@ if [[ -z $CEMB_UTILS_DEV_ENV ]]; then
     exit 1
 fi
 
-# build
-mkdir -p ${PROJECT_ROOT}/build_temp
-pushd ${PROJECT_ROOT}/build_temp
-cmake ..
-cmake --build .
+if [[ -z $PROJECT_ROOT ]]; then
+    echo "Please define PROJECT_ROOT as the absolute path to the root of this repository."
+    echo "If you are already in the root folder, calling 'export PROJECT_ROOT=$(pwd)' suffices."
+    exit 1
+fi
 
-#test
-cd ${PROJECT_ROOT}/build_temp
+ARTEFACTS_DIR=${PROJECT_ROOT}/build_temp 
+BUILD_DIR=${ARTEFACTS_DIR}/build
+COVERAGE_DIR=${ARTEFACTS_DIR}/coverage
+
+# make all directories
+mkdir -p ${ARTEFACTS_DIR}
+mkdir -p ${BUILD_DIR}
+mkdir -p ${COVERAGE_DIR}
+
+# build and test
+pushd ${BUILD_DIR}
+
+cmake ${PROJECT_ROOT}
+cmake --build .
 ctest -T Test -V --no-compress-output --output-on-failure --no-tests=error
 
+popd
+
+
 #coverage
-cd ${PROJECT_ROOT}/build_temp
-gcovr -r .. . --xml-pretty  --exclude-directories='.*\/extern\/.*' > coverage_report.xml
-gcovr -r .. . --html --html-details -o ${PROJECT_ROOT}/build_temp/coverage_report.html  --exclude-directories='.*\/extern\/.*'
+pushd ${COVERAGE_DIR}
+
+gcovr -r ${PROJECT_ROOT} ${BUILD_DIR} --xml-pretty  --exclude-directories='.*\/extern\/.*' > coverage_report.xml
+gcovr -r ${PROJECT_ROOT} ${BUILD_DIR} --html --html-details -o coverage_report.html  --exclude-directories='.*\/extern\/.*'
 
 popd

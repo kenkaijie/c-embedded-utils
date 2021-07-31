@@ -14,6 +14,15 @@ fi
 
 DOCKER_PROJECT_ROOT="/usr/project"
 
-docker build -t c-embedded-utils -f ${PROJECT_ROOT}/Dockerfile ${PROJECT_ROOT}
+pushd ${PROJECT_ROOT}
+
+# special CI related action to still use this build file, but the docker image is built externally.
+if [[ -z $CEMB_BUILD_SKIP_DOCKER_BUILD ]]; then
+    docker build -t c-embedded-utils -f Dockerfile .
+fi
+
 # bind our project root to the internal project root, then set PROJECT_ROOT as the internal
-docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="${DOCKER_PROJECT_ROOT}" c-embedded-utils "export PROJECT_ROOT=${DOCKER_PROJECT_ROOT} && /bin/bash \${PROJECT_ROOT}/build_scripts/dev_env_build.sh"
+docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="${DOCKER_PROJECT_ROOT}" \
+-e "PROJECT_ROOT=${DOCKER_PROJECT_ROOT}" c-embedded-utils "/bin/bash ${DOCKER_PROJECT_ROOT}/build_scripts/dev_env_build.sh"
+
+popd

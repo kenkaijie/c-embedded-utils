@@ -4,7 +4,7 @@ on: [push]
 
 env:
   PROJECT_ROOT: ${{github.workspace}}
-
+  
 jobs:
   BuildAndTest:
     runs-on: ubuntu-latest
@@ -13,13 +13,19 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Build And Test
+    - name: Docker Cache
+      uses: satackey/action-docker-layer-caching@v0.0.11
+      # Ignore the failure of a step and avoid terminating the job.
+      continue-on-error: true
+
+    # because we are using the docker action to build the container, we will simply run the action here without building
+    - name: Compile And Test
       run: ${{github.workspace}}/build_scripts/build.sh
 
     - name: Publish Code Coverage
       uses: codecov/codecov-action@v1
       with:
-        token: ${{secrets.CODECOV_TOKEN}} # not required for public repos
-        files: ${{github.workspace}}/build_temp/coverage_report.xml # optional
-        fail_ci_if_error: true # optional (default = false)
-        verbose: true # optional (default = false)
+        token: ${{secrets.CODECOV_TOKEN}}
+        files: ${{github.workspace}}/build_temp/coverage/coverage_report.xml
+        fail_ci_if_error: true
+        verbose: true

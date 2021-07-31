@@ -8,7 +8,16 @@
  */
 #pragma once
 
-enum error_codes
+#include <stdint.h>
+
+/**
+ * @brief All possible general error codes.
+ * 
+ * Error codes here will occupy the bottom numeric values, starting from 0 (indicating success) and counting upwards. 
+ * Any application specific codes values should be assigned at least above the last error code in this list. Ideally the
+ * number of error codes here will not exceed 255, so feel free to use any region above that.
+ */
+enum ErrorCodes
 {
     ERR_NONE = 0, /**< Success */
     ERR_GENERIC_ERROR, /**< Use this if nothing else describes and the error is too specific to justify an entry. */
@@ -28,5 +37,12 @@ enum error_codes
     ERR_NOT_IMPLEMENTED, /**< Operation is not supported */
 };
 
-typedef enum error_codes error_t;
 
+/**
+ * @brief Typedef alias for #ErrorCodes. 
+ * 
+ * Used as uint32_t to indicate that other values can be used in this context to expand the error code ranges.
+ * 
+ * @memberof ErrorCodes
+ */
+typedef uint32_t ErrorCode_t;

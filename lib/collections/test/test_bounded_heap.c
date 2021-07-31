@@ -18,43 +18,16 @@ static bool max_heap_compare(void const * const parent, void const * const child
     return (intptr_t) parent < (intptr_t) child;
 }
 
-static void test_nulls(void ** state)
-{
-    error_t ret;
-    void * heap_storage[HEAP_ITEM_COUNT];
-    bounded_heap_t heap;
-
-    ret = bounded_heap_init(&heap, NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = bounded_heap_pop(&heap, NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = bounded_heap_peek(&heap, NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-}
-
 static void test_bad_init(void ** state)
 {
-    error_t ret;
+    ErrorCode_t ret;
     void * heap_storage[HEAP_ITEM_COUNT];
-    bounded_heap_t heap;
-    bounded_heap_config_t heap_cfg = {
+    BoundedHeap_t heap;
+    BoundedHeapConfig_t heap_cfg = {
         .heap_storage = heap_storage,
         .element_count = HEAP_ITEM_COUNT,
         .compare = max_heap_compare
     };
-
-    heap_cfg.heap_storage = NULL;
-    ret = bounded_heap_init(&heap, &heap_cfg);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-    heap_cfg.heap_storage = heap_storage;
-
-    heap_cfg.compare = NULL;
-    ret = bounded_heap_init(&heap, &heap_cfg);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-    heap_cfg.compare = max_heap_compare;
     
     heap_cfg.element_count = 0;
     ret = bounded_heap_init(&heap, &heap_cfg);
@@ -67,10 +40,10 @@ static void test_bad_init(void ** state)
  */ 
 static void test_safe_deinit(void ** state)
 {
-    error_t ret;
+    ErrorCode_t ret;
     void * heap_storage[HEAP_ITEM_COUNT];
-    bounded_heap_t heap;
-    bounded_heap_config_t heap_cfg = {
+    BoundedHeap_t heap;
+    BoundedHeapConfig_t heap_cfg = {
         .heap_storage = heap_storage,
         .element_count = HEAP_ITEM_COUNT,
         .compare = max_heap_compare
@@ -98,9 +71,9 @@ static void test_safe_deinit(void ** state)
  */
 static void test_max_heap_test_scaffold(void ** values, void ** heap_storage, void * min_value, size_t item_count)
 {
-    error_t ret;
-    bounded_heap_t heap;
-    bounded_heap_config_t heap_cfg = {
+    ErrorCode_t ret;
+    BoundedHeap_t heap;
+    BoundedHeapConfig_t heap_cfg = {
         .heap_storage = heap_storage,
         .element_count = item_count,
         .compare = max_heap_compare
@@ -188,7 +161,6 @@ static void test_random_order_max_heap(void ** state)
 
 int test_bounded_heap_run_tests(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_nulls),
         cmocka_unit_test(test_bad_init),
         cmocka_unit_test(test_safe_deinit),
         cmocka_unit_test(test_ascending_max_heap),
