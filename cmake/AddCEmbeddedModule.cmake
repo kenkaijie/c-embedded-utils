@@ -20,7 +20,7 @@ function(add_c_embedded_module)
     target_include_directories(${C_EMB_MODULE_NAME} PUBLIC inc)
     target_sources(${C_EMB_MODULE_NAME} PRIVATE ${C_EMB_MODULE_SOURCES})
     target_link_libraries(${C_EMB_MODULE_NAME} PRIVATE ${C_EMB_MODULE_PRIVATE_LINKS})
-    target_link_libraries(${C_EMB_MODULE_NAME} PUBLIC ${C_EMB_MODULE_PUBLIC_LINKS})
+    target_link_libraries(${C_EMB_MODULE_NAME} PUBLIC ${C_EMB_MODULE_PUBLIC_LINKS} cemd_global_options)
 
     # add this to the aggregate library for cemb
     target_link_libraries(cemb PUBLIC ${C_EMB_MODULE_NAME})
@@ -33,7 +33,6 @@ function(add_c_embedded_module)
         target_link_libraries(test_${C_EMB_MODULE_NAME} PRIVATE ${C_EMB_MODULE_NAME} cmocka::cmocka ${C_EMB_MODULE_TEST_LINKS})
         # test executors should just have coverage on by default.
         add_executable(test_${C_EMB_MODULE_NAME}_main)
-        target_compile_options(test_${C_EMB_MODULE_NAME}_main PRIVATE --coverage -O0)
         target_link_libraries(test_${C_EMB_MODULE_NAME}_main PRIVATE test_${C_EMB_MODULE_NAME} gcov ${C_EMB_MODULE_TEST_RUNNER_LINKS})
         target_sources(test_${C_EMB_MODULE_NAME}_main PRIVATE ${C_EMB_MODULE_TEST_RUNNER_SOURCES})
         add_test(test_${C_EMB_MODULE_NAME} test_${C_EMB_MODULE_NAME}_main)

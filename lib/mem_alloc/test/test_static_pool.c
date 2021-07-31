@@ -21,14 +21,14 @@ struct test_static_pool_dummy_data
 
 static void test_correct_interface(void ** state)
 {
-    error_t ret;
+    ErrorCode_t ret;
     size_t const object_size = sizeof(test_static_pool_dummy_data_t);
     size_t const object_count = 16;
     uint8_t buffer[object_size * object_count];
     void * allocation_stack[object_count];
     test_static_pool_dummy_data_t * object_pointer;
 
-    static_pool_config_t config = {
+    StaticPoolConfig_t config = {
         .buffer = buffer,
         .buffer_size = sizeof(buffer),
         .allocation_stack = allocation_stack,
@@ -36,16 +36,13 @@ static void test_correct_interface(void ** state)
         .object_size = object_size, 
     };
 
-    static_pool_t pool;
-    object_pool_t interface;
-
-    ret = static_pool_as_object_pool(&pool, NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
+    StaticPool_t pool;
+    IPoolAllocator_t interface;
 
     ret = static_pool_init(&pool, &config);
     assert_int_equal(ERR_NONE, ret);
     
-    ret = static_pool_as_object_pool(&pool, &interface);
+    ret = static_pool_as_i_pool_allocator(&pool, &interface);
     assert_int_equal(ERR_NONE, ret);
 
     assert_ptr_equal(interface.context, &pool);
@@ -54,44 +51,14 @@ static void test_correct_interface(void ** state)
     assert_ptr_equal(interface.get_available_count, static_pool_get_available_count);
 }
 
-
-static void test_null_checks(void ** state)
-{
-    error_t ret;
-    size_t const object_size = sizeof(test_static_pool_dummy_data_t);
-    size_t const object_count = 16;
-    uint8_t buffer[object_size * object_count];
-    void * allocation_stack[object_count];
-    test_static_pool_dummy_data_t * object_pointer;
-
-    static_pool_config_t config = {
-        .buffer = buffer,
-        .buffer_size = sizeof(buffer),
-        .allocation_stack = allocation_stack,
-        .object_count = object_count,
-        .object_size = object_size, 
-    };
-
-    static_pool_t pool;
-
-    ret = static_pool_init(&pool, NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = static_pool_allocate(&pool, NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-
-    ret = static_pool_deallocate(&pool, NULL);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-}
-
 static void test_invalid_configs(void ** state)
 {
-    error_t ret;
+    ErrorCode_t ret;
     uint8_t buffer[TEST_OBJECT_SIZE_BYTES * TEST_OBJECT_COUNT] = {};
     void * allocation_stack[TEST_OBJECT_COUNT] = {};
     test_static_pool_dummy_data_t * object_pointer;
 
-    static_pool_config_t config = {
+    StaticPoolConfig_t config = {
         .buffer = buffer,
         .buffer_size = sizeof(buffer),
         .allocation_stack = allocation_stack,
@@ -99,27 +66,7 @@ static void test_invalid_configs(void ** state)
         .object_size = TEST_OBJECT_SIZE_BYTES,
     };
 
-    static_pool_t pool;
-
-    config.buffer = NULL;
-    ret = static_pool_init(&pool, &config);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-    config.buffer = buffer;
-
-    config.allocation_stack = NULL;
-    ret = static_pool_init(&pool, &config);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-    config.allocation_stack = allocation_stack;
-
-    config.buffer = NULL;
-    ret = static_pool_init(&pool, &config);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-    config.buffer = buffer;
-
-    config.buffer = NULL;
-    ret = static_pool_init(&pool, &config);
-    assert_int_equal(ERR_NULL_POINTER, ret);
-    config.buffer = buffer;
+    StaticPool_t pool;
 
     // check sizing requirements (buffer too small, a buffer biugger than the memory size is ok.)
     config.buffer_size = TEST_OBJECT_COUNT * TEST_OBJECT_SIZE_BYTES - 1;
@@ -130,14 +77,14 @@ static void test_invalid_configs(void ** state)
 
 static void test_deallocate_twice_fails(void ** state)
 {
- error_t ret;
+ ErrorCode_t ret;
     uint8_t buffer[TEST_OBJECT_SIZE_BYTES * TEST_OBJECT_COUNT] = {};
     void * allocation_stack[TEST_OBJECT_COUNT] = {};
     void * token1 = NULL;
     void * token2 = NULL;
     test_static_pool_dummy_data_t * object_pointer = NULL;
 
-    static_pool_config_t config = {
+    StaticPoolConfig_t config = {
         .buffer = buffer,
         .buffer_size = sizeof(buffer),
         .allocation_stack = allocation_stack,
@@ -145,7 +92,7 @@ static void test_deallocate_twice_fails(void ** state)
         .object_size = TEST_OBJECT_SIZE_BYTES, 
     };
 
-    static_pool_t pool;
+    StaticPool_t pool;
 
     ret = static_pool_init(&pool, &config);
     assert_int_equal(ERR_NONE, ret);
@@ -175,7 +122,7 @@ static void test_deallocate_twice_fails(void ** state)
 
 static void test_allocation_fills_and_unfills_correctly(void ** state)
 {
-    error_t ret;
+    ErrorCode_t ret;
     uint8_t buffer[TEST_OBJECT_SIZE_BYTES * TEST_OBJECT_COUNT] = {};
     void * allocation_stack[TEST_OBJECT_COUNT] = {};
     void * object_pointers[TEST_OBJECT_COUNT] = {};
@@ -186,7 +133,7 @@ static void test_allocation_fills_and_unfills_correctly(void ** state)
         object_pointers[idx] = NULL;
     }
 
-    static_pool_config_t config = {
+    StaticPoolConfig_t config = {
         .buffer = buffer,
         .buffer_size = sizeof(buffer),
         .allocation_stack = allocation_stack,
@@ -194,7 +141,7 @@ static void test_allocation_fills_and_unfills_correctly(void ** state)
         .object_size = TEST_OBJECT_SIZE_BYTES, 
     };
 
-    static_pool_t pool;
+    StaticPool_t pool;
 
     ret = static_pool_init(&pool, &config);
     assert_int_equal(ERR_NONE, ret);
@@ -244,7 +191,6 @@ int test_static_pool_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_correct_interface),
-        cmocka_unit_test(test_null_checks),
         cmocka_unit_test(test_invalid_configs),
         cmocka_unit_test(test_allocation_fills_and_unfills_correctly),
         cmocka_unit_test(test_deallocate_twice_fails),

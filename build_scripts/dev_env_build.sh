@@ -15,21 +15,29 @@ if [[ -z $PROJECT_ROOT ]]; then
     exit 1
 fi
 
-# build
-mkdir -p ${PROJECT_ROOT}/build_temp
+ARTEFACTS_DIR=${PROJECT_ROOT}/build_temp 
+BUILD_DIR=${ARTEFACTS_DIR}/build
+COVERAGE_DIR=${ARTEFACTS_DIR}/coverage
 
-pushd ${PROJECT_ROOT}/build_temp
+# make all directories
+mkdir -p ${ARTEFACTS_DIR}
+mkdir -p ${BUILD_DIR}
+mkdir -p ${COVERAGE_DIR}
 
-cmake ..
+# build and test
+pushd ${BUILD_DIR}
+
+cmake ${PROJECT_ROOT}
 cmake --build .
-
-#test
-cd ${PROJECT_ROOT}/build_temp
 ctest -T Test -V --no-compress-output --output-on-failure --no-tests=error
 
+popd
+
+
 #coverage
-cd ${PROJECT_ROOT}/build_temp
-gcovr -r .. . --xml-pretty  --exclude-directories='.*\/extern\/.*' > coverage_report.xml
-gcovr -r .. . --html --html-details -o ${PROJECT_ROOT}/build_temp/coverage_report.html  --exclude-directories='.*\/extern\/.*'
+pushd ${COVERAGE_DIR}
+
+gcovr -r ${PROJECT_ROOT} ${BUILD_DIR} --xml-pretty  --exclude-directories='.*\/extern\/.*' > coverage_report.xml
+gcovr -r ${PROJECT_ROOT} ${BUILD_DIR} --html --html-details -o coverage_report.html  --exclude-directories='.*\/extern\/.*'
 
 popd

@@ -12,12 +12,12 @@
 
 /**
  * @brief All possible general error codes.
- *
+ * 
  * Error codes here will occupy the bottom numeric values, starting from 0 (indicating success) and counting upwards. 
  * Any application specific codes values should be assigned at least above the last error code in this list. Ideally the
  * number of error codes here will not exceed 255, so feel free to use any region above that.
  */
-enum error_codes
+enum ErrorCodes
 {
     ERR_NONE = 0, /**< Success */
     ERR_GENERIC_ERROR, /**< Use this if nothing else describes and the error is too specific to justify an entry. */
@@ -37,5 +37,12 @@ enum error_codes
     ERR_NOT_IMPLEMENTED, /**< Operation is not supported */
 };
 
-/* We use a uint32_t for the size as it will allow users to expand the error codes with application specific codes. */
-typedef uint32_t error_t;
+
+/**
+ * @brief Typedef alias for #ErrorCodes. 
+ * 
+ * Used as uint32_t to indicate that other values can be used in this context to expand the error code ranges.
+ * 
+ * @memberof ErrorCodes
+ */
+typedef uint32_t ErrorCode_t;

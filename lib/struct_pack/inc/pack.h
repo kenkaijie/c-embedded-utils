@@ -34,7 +34,7 @@
  *
  * @returns The number of bytes written to the buffer, or 0 if the buffer is too small or an error has occurred
  */
-typedef size_t(*pack_serialise_func_t)(void const * element, size_t offset, uint8_t * buffer, size_t buffer_size);
+typedef size_t(*PackSerialiseFunction_t)(void const * element, size_t offset, uint8_t * buffer, size_t buffer_size);
 
 /**
  * @brief De-serialisation function to extract a specific value from the buffer.
@@ -46,7 +46,7 @@ typedef size_t(*pack_serialise_func_t)(void const * element, size_t offset, uint
  *
  * @returns The number of bytes written to the buffer, or 0 if the buffer is too small or an error has occurred
  */
-typedef size_t(*pack_deserialise_func_t)(void * element, size_t offset, uint8_t const * buffer, size_t buffer_size);
+typedef size_t(*PackDeserialiseFunction_t)(void * element, size_t offset, uint8_t const * buffer, size_t buffer_size);
 
 /**
  *  @brief  Checks if the packable type can fit into the buffer provided, given the offset.

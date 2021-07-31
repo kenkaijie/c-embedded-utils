@@ -1,11 +1,6 @@
 /**
  * @file
- * @brief A queue with elements copied into the queue.
- *
- * Used for any application that needs queuing to prevent resource blocking.
- * Similar to the a circular buffer, but with a capped size. Does not loop around.
- *
- * Uses a static memory pool under the hood, suitable mostly for larger objects.
+ * @brief Contains implementations for a shallow copied queue.
  */
 #pragma once
 
@@ -13,10 +8,13 @@
 #include <stdint.h>
 #include "error_codes.h"
 
-typedef struct copy_queue copy_queue_t;
-typedef struct copy_queue_config copy_queue_config_t;
+typedef struct CopyQueue CopyQueue_t;
+typedef struct CopyQueueConfig CopyQueueConfig_t;
 
-struct copy_queue_config
+/**
+ * @class CopyQueueConfig
+ */
+struct CopyQueueConfig
 {
     uint8_t * queue_buffer; /**< Additional stack internally needed to store the memory */
     size_t queue_size; /**< the total size of the queue in bytes, should be equal to the value element_count * element_size*/
@@ -24,85 +22,101 @@ struct copy_queue_config
     size_t element_size; /**< The number of elements in the queue */
 };
 
-struct copy_queue
+/**
+ * @brief A queue which copies values into itself (removing the need to maintain the lifecycle).
+ * 
+ * @note This does a shallow copy only, for a deep copy use a different queue which provides a deep copy function. ( or
+ *       allows passing in of a copy function).
+ */
+struct CopyQueue
 {
-    size_t m_count;
-    size_t m_max_size;
-    size_t m_element_size;
-    uint8_t * m_buffer;
-    size_t m_tail_idx;
-    size_t m_head_idx;
+    size_t count;
+    size_t max_size;
+    size_t element_size;
+    uint8_t * buffer;
+    size_t tail_idx;
+    size_t head_idx;
 };
 
 /**
- * @brief  Initialises a copy queue, which copies elements into the queue
+ * @brief Initialises a copy queue, which copies elements into the queue
  * 
  * @param[in] queue - the queue to use
  * @param[in] config - the queue's configuration
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_INVALID_ARG
+ * 
+ * @memberof CopyQueue
  */
-error_t copy_queue_init(copy_queue_t * queue, copy_queue_config_t const * config);
+ErrorCode_t copy_queue_init(CopyQueue_t * queue, CopyQueueConfig_t const * config);
 
 /**
  * @brief  Deinitialises a queue.
  * 
  * @param[in] queue - the queue to use
+ * 
+ * @memberof CopyQueue
  */
-void copy_queue_deinit(copy_queue_t * queue);
+void copy_queue_deinit(CopyQueue_t * queue);
 
 /**
- *  @brief  Places an element in the queue, note the element will be copied in.
+ * @brief Places an element in the queue, note the element will be copied in.
  * 
- *  @param[in] queue - the queue to use
- *  @param[in] element - The element to copy into the queue. Note this element is not checked, but should be the same type as the queue was initialised.
+ * @param[in] queue - the queue to use
+ * @param[in] element - The element to copy into the queue. Note this element is not checked, but should be the same type as the queue was initialised.
  * 
- *  @returns    ERR_NONE
- *              ERR_NULL_POINTER
- *              ERR_NO_MEM - queue is full
+ * @retval #ERR_NONE
+ * @retval #ERR_NO_MEM - queue is full
+ * 
+ * @memberof CopyQueue
  */
-error_t copy_queue_enqueue(copy_queue_t * queue, void const * element);
+ErrorCode_t copy_queue_enqueue(CopyQueue_t * queue, void const * element);
 
 /**
- *  @brief  Removes the next item that can be popped from the queue.
+ * @brief Removes the next item that can be popped from the queue.
  * 
- *  @param[in] queue - the queue to use
- *  @param[inout] element - the element to save the queue to. Must be of the type the queue was initialised to.
+ * @param[in] queue - the queue to use
+ * @param[inout] element - the element to save the queue to. Must be of the type the queue was initialised to.
  * 
- *  @returns    ERR_NONE
- *              ERR_NULL_POINTER
- *              ERR_EMPTY - The queue has no elements
+ * @retval #ERR_NONE
+ * @retval #ERR_EMPTY - The queue has no elements
+ * 
+ * @memberof CopyQueue
  */
-error_t copy_queue_dequeue(copy_queue_t * queue, void * element);
+ErrorCode_t copy_queue_dequeue(CopyQueue_t * queue, void * element);
 
 /**
- *  @brief  Peeks at the next item that can be popped from the queue.
+ * @brief  Peeks at the next item that can be popped from the queue.
  * 
- *  @param[in] queue - the queue to use
- *  @param[inout] element - the element to save the queue to. Must be of the type the queue was initialised to.
+ * @param[in] queue - the queue to use
+ * @param[inout] element - the element to save the queue to. Must be of the type the queue was initialised to.
  * 
- *  @returns    ERR_NONE
- *              ERR_NULL_POINTER
- *              ERR_EMPTY - The queue has no elements
+ * @retval #ERR_NONE
+ * @retval #ERR_EMPTY - The queue has no elements
+ * 
+ * @memberof CopyQueue
  */
-error_t copy_queue_peek(copy_queue_t * queue, void * element);
+ErrorCode_t copy_queue_peek(CopyQueue_t * queue, void * element);
 
 /**
- *  @brief  Gets the number of free items in the queue.
- * 
- *  @param[in] queue - the queue to use
- * 
- *  @returns    The number of items in the queue, aka the count.
- */
-size_t copy_queue_get_remaining(copy_queue_t const * queue);
-
-/**
- *  @brief  Gets the number of items in the queue.
+ *  @brief Gets the number of free items in the queue.
  * 
  *  @param[in] queue - the queue to use
  * 
- *  @returns    The number of items in the queue, aka the count.
+ *  @returns The number of items in the queue, aka the count.
+ * 
+ * @memberof CopyQueue
  */
-size_t copy_queue_get_size(copy_queue_t const * queue);
+size_t copy_queue_get_remaining(CopyQueue_t const * queue);
+
+/**
+ *  @brief Gets the number of items in the queue.
+ * 
+ *  @param[in] queue - the queue to use
+ * 
+ *  @returns The number of items in the queue, aka the count.
+ * 
+ * @memberof CopyQueue
+ */
+size_t copy_queue_get_size(CopyQueue_t const * queue);

@@ -9,14 +9,18 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "object_pool.h"
+#include "i_pool_allocator.h"
 #include "error_codes.h"
 #include "ptr_stack.h"
 
-typedef struct static_pool static_pool_t;
-typedef struct static_pool_config static_pool_config_t;
+typedef struct StaticPool StaticPool_t;
+typedef struct StaticPoolConfig StaticPoolConfig_t;
 
-struct static_pool_config
+/**
+ * @brief Config parameters for the #StaticPool.
+ * @class StaticPoolConfig
+ */
+struct StaticPoolConfig
 {
     void ** allocation_stack; /**< An allocation stack needed to for keeping track of the free spaces, should have object_size items. */
     uint8_t * buffer; /**< The size of the buffer to manage */
@@ -25,22 +29,31 @@ struct static_pool_config
     size_t object_count; /**< Number of objects this pool manages. Note that (object_size * object_count == buffer_size) */
 };
 
-struct static_pool
+/**
+ * @brief A statically allocated pool of member blocks.
+ * 
+ * Each block in this pool has the same size, and is designed for allowing for "dynamic" like memory use in a static 
+ * only style environment. Useful for allocating and freeing some run time data if needed.
+ * 
+ * @class StaticPool
+ */
+struct StaticPool
 {
-    static_pool_config_t m_config;
-    ptr_stack_t m_free_stack;
+    StaticPoolConfig_t config;
+    PtrStack_t free_stack;
 };
 
 /**
- * @brief  Gets the object pool interface corresponding to this static pool.
+ * @brief  Gets the pool allocator interface corresponding to this static pool.
  * 
  * @param[in] pool - The pool to create the interface for
  * @param[in] interface - The interface to configure
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
+ * 
+ * @memberof StaticPool
  */
-error_t static_pool_as_object_pool(static_pool_t * pool, object_pool_t * interface);
+ErrorCode_t static_pool_as_i_pool_allocator(StaticPool_t * pool, IPoolAllocator_t * interface);
 
 /**
  * @brief  Initialises a static pool with the provided config.
@@ -48,17 +61,20 @@ error_t static_pool_as_object_pool(static_pool_t * pool, object_pool_t * interfa
  * @param[in] pool - The pointer to the static pool object
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_INVALID_ARG - The provided configuration is invalid
+ * 
+ * @memberof StaticPool
  */
-error_t static_pool_init(static_pool_t * pool, static_pool_config_t const * config);
+ErrorCode_t static_pool_init(StaticPool_t * pool, StaticPoolConfig_t const * config);
 
 /**
  * @brief  De-initialises a static pool.
  * 
  * @param[in] pool - The pointer to the static pool object
+ * 
+ * @memberof StaticPool
  */
-void static_pool_deinit(static_pool_t * pool);
+void static_pool_deinit(StaticPool_t * pool);
 
 /**
  * @brief  Requests an object from the pool. If successful, this function will return the token that can be used to fetch the object.
@@ -67,10 +83,11 @@ void static_pool_deinit(static_pool_t * pool);
  * @param[inout] object_ptr - The pointer to the object acquired.
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_NO_MEM - No slots are available
+ * 
+ * @memberof StaticPool
  */
-error_t static_pool_allocate(static_pool_t * pool, void ** object_ptr);
+ErrorCode_t static_pool_allocate(StaticPool_t * pool, void ** object_ptr);
 
 /**
  * @brief  Frees an object for reuse in the future. Note objects may not be zeroed when freed.
@@ -81,10 +98,11 @@ error_t static_pool_allocate(static_pool_t * pool, void ** object_ptr);
  * @param[inout] object_ptr - The object to free back into the pool. The pointer provided will return to NULL after freeing. Note the object provided should be
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_OUT_OF_BOUNDS - The token provided is out of bounds.
+ * 
+ * @memberof StaticPool
  */
-error_t static_pool_deallocate(static_pool_t * pool, void ** object_ptr);
+ErrorCode_t static_pool_deallocate(StaticPool_t * pool, void ** object_ptr);
 
 /**
  * @brief  Gets the number of remaining slots in the pool.
@@ -92,5 +110,7 @@ error_t static_pool_deallocate(static_pool_t * pool, void ** object_ptr);
  * @param[in] pool  - The pointer to the static pool object
  * 
  * @returns The number of unused slots in the pool
+ * 
+ * @memberof StaticPool
  */
-size_t static_pool_get_available_count(static_pool_t * pool);
+size_t static_pool_get_available_count(StaticPool_t * pool);

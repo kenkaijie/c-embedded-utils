@@ -21,56 +21,30 @@ static void publisher_callback_b(void * context, void const * event_data)
     check_expected_ptr(context);
 }
 
-static void test_nulls(void ** state)
-{
-    error_t ret;
-    static_event_publisher_t pub;
-
-    ret = static_event_publisher_init(&pub, NULL);
-    assert_int_equal(ret, ERR_NULL_POINTER);
-
-
-}
-
 static void test_bad_init(void ** state)
 {
-    error_t ret;
-    static_event_publisher_t pub;
-    static_event_publisher_entry_t subscriber = {
+    ErrorCode_t ret;
+    StaticEventPublisher_t pub;
+    StaticEventPublisherEntry_t subscriber = {
         .context = (void *) 0xDEADBEEFUL,
         .callback = publisher_callback_a,
     };
-    static_event_publisher_config_t pub_cfg = {
+    StaticEventPublisherConfig_t pub_cfg = {
         .subscriber_count = 0,
         .subscribers = &subscriber,
     };
 
-    // 0 events
-
     ret = static_event_publisher_init(&pub, &pub_cfg);
     assert_int_equal(ret, ERR_INVALID_ARG);
-
-    pub_cfg.subscriber_count = 1;
-    pub_cfg.subscribers = NULL;
-
-    ret = static_event_publisher_init(&pub, &pub_cfg);
-    assert_int_equal(ret, ERR_NULL_POINTER);
-
-    pub_cfg.subscriber_count = 1;
-    pub_cfg.subscribers = &subscriber;
-    subscriber.callback = NULL;
-
-    ret = static_event_publisher_init(&pub, &pub_cfg);
-    assert_int_equal(ret, ERR_NULL_POINTER);
 }
 
 static void test_publisher(void ** state)
 {
-    error_t ret;
-    static_event_publisher_t pub;
+    ErrorCode_t ret;
+    StaticEventPublisher_t pub;
     int int_context = 5;
     int int_event = 2;
-    static_event_publisher_entry_t subscribers[] = {
+    StaticEventPublisherEntry_t subscribers[] = {
         {
         .context = (void *) &int_context,
         .callback = publisher_callback_a,
@@ -80,7 +54,7 @@ static void test_publisher(void ** state)
         .callback = publisher_callback_b,
         },
     };
-    static_event_publisher_config_t pub_cfg = {
+    StaticEventPublisherConfig_t pub_cfg = {
         .subscriber_count = 2,
         .subscribers = &subscribers[0],
     };
@@ -107,15 +81,15 @@ static void test_publisher(void ** state)
 
 static void test_safe_deinit(void ** state)
 {
-     error_t ret;
-    static_event_publisher_t pub;
+     ErrorCode_t ret;
+    StaticEventPublisher_t pub;
     int int_context = 5;
     int int_event = 2;
-    static_event_publisher_entry_t subscriber = {
+    StaticEventPublisherEntry_t subscriber = {
         .context = (void *) &int_context,
         .callback = publisher_callback_a,
     };
-    static_event_publisher_config_t pub_cfg = {
+    StaticEventPublisherConfig_t pub_cfg = {
         .subscriber_count = 2,
         .subscribers = &subscriber,
     };
@@ -132,7 +106,6 @@ static void test_safe_deinit(void ** state)
 
 int test_static_event_publisher_run_tests(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_nulls),
         cmocka_unit_test(test_bad_init),
         cmocka_unit_test(test_publisher),
         cmocka_unit_test(test_safe_deinit),

@@ -11,39 +11,20 @@
 
 #define ITEMS_IN_TEST_QUEUE (15)
 
-static void test_interface_nulls(void ** state)
-{
-    copy_queue_t queue;
-
-    error_t result;
-
-    result = copy_queue_init(&queue, NULL);
-    assert_int_equal(ERR_NULL_POINTER, result);
-
-    result = copy_queue_enqueue(&queue, NULL);
-    assert_int_equal(ERR_NULL_POINTER, result);
-
-    result = copy_queue_dequeue(&queue, NULL);
-    assert_int_equal(ERR_NULL_POINTER, result);
-
-    result = copy_queue_peek(&queue, NULL);
-    assert_int_equal(ERR_NULL_POINTER, result);
-}
-
 static void test_correct_fifo_ordering(void ** state)
 {
     static int queue_buffer[ITEMS_IN_TEST_QUEUE];
 
-    copy_queue_config_t config = {
+    CopyQueueConfig_t config = {
         .element_count = ITEMS_IN_TEST_QUEUE,
         .element_size = sizeof(int),
         .queue_buffer = (uint8_t *)queue_buffer,
         .queue_size = sizeof(queue_buffer),
     };
 
-    copy_queue_t queue;
+    CopyQueue_t queue;
 
-    error_t result;
+    ErrorCode_t result;
 
     result = copy_queue_init(&queue, &config);
     assert_int_equal(ERR_NONE, result);
@@ -97,15 +78,15 @@ static void test_correct_fifo_ordering(void ** state)
 static void test_bad_config(void ** state)
 {
     static int queue_buffer[ITEMS_IN_TEST_QUEUE];
-    copy_queue_config_t base_config = {
+    CopyQueueConfig_t base_config = {
         .element_count = ITEMS_IN_TEST_QUEUE,
         .element_size = sizeof(int),
         .queue_buffer = (uint8_t *)queue_buffer,
         .queue_size = sizeof(queue_buffer),
     };
-    copy_queue_config_t test_config = base_config;
-    copy_queue_t queue;
-    error_t result;
+    CopyQueueConfig_t test_config = base_config;
+    CopyQueue_t queue;
+    ErrorCode_t result;
 
     // we define as having 1 more item in the queue than the buffer will allow
     test_config = base_config;
@@ -138,18 +119,13 @@ static void test_bad_config(void ** state)
     result = copy_queue_init(&queue, &test_config);
     assert_int_equal(ERR_INVALID_ARG, result);
 
-    // a null buffer
-    test_config = base_config;
-    test_config.queue_buffer = NULL;
-    result = copy_queue_init(&queue, &test_config);
-    assert_int_equal(ERR_NULL_POINTER, result);
 }
 
 static void test_deinit_prevents_actions(void ** state)
 {
-    copy_queue_t queue;
+    CopyQueue_t queue;
     int dummy;
-    error_t result;
+    ErrorCode_t result;
     copy_queue_deinit(&queue);
 
     result = copy_queue_enqueue(&queue, &dummy);
@@ -171,7 +147,6 @@ static void test_deinit_prevents_actions(void ** state)
 int test_copy_queue_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_interface_nulls),
         cmocka_unit_test(test_correct_fifo_ordering),
         cmocka_unit_test(test_bad_config),
         cmocka_unit_test(test_deinit_prevents_actions),

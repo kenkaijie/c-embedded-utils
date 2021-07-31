@@ -17,7 +17,7 @@
 #include <stddef.h>
 #include "error_codes.h"
 
-typedef struct object_pool object_pool_t;
+typedef struct IPoolAllocator IPoolAllocator_t;
 
 /**
  * @brief The generic function pointer that will allocate an object from the pool if possible. 
@@ -29,7 +29,7 @@ typedef struct object_pool object_pool_t;
  * @retval #ERR_NULL_POINTER
  * @retval #ERR_NO_MEM - No slots are available
  */
-typedef error_t(*object_pool_allocate_t)(void * context, void ** object_ptr);
+typedef ErrorCode_t(*i_pool_allocate_allocate_t)(void * context, void ** object_ptr);
 
 /**
  * @brief The generic function pointer that will deallocate an object from the pool.
@@ -44,7 +44,7 @@ typedef error_t(*object_pool_allocate_t)(void * context, void ** object_ptr);
  * @retval #ERR_NULL_POINTER
  * @retval #ERR_OUT_OF_BOUNDS - The token provided is out of bounds. (is it invalid)
  */
-typedef error_t(*object_pool_deallocate_t)(void * context, void ** object_ptr);
+typedef ErrorCode_t(*i_pool_allocate_deallocate_t)(void * context, void ** object_ptr);
 
 /**
  * @brief Function pointer to get the remaining slots in the pool.
@@ -53,47 +53,56 @@ typedef error_t(*object_pool_deallocate_t)(void * context, void ** object_ptr);
  * 
  * @returns The number of unused slots in the pool
  */
-typedef size_t(*object_pool_get_available_count_t)(void * context);
+typedef size_t(*i_pool_allocate_get_available_count_t)(void * context);
 
-struct object_pool
+/**
+ * @brief An interface for a Pool Allocator.
+ * 
+ * Provides the interface needed for any pool allocator interface.
+ */
+struct IPoolAllocator
 {
     void * context;
-    object_pool_allocate_t allocate;
-    object_pool_deallocate_t deallocate;
-    object_pool_get_available_count_t get_available_count;
+    i_pool_allocate_allocate_t allocate;
+    i_pool_allocate_deallocate_t deallocate;
+    i_pool_allocate_get_available_count_t get_available_count;
 };
 
 /**
- * @brief  Requests an object from the pool. If successful, this function will return the token that can be used to
+ * @brief Requests an object from the pool. If successful, this function will return the token that can be used to
  * fetch the object.
  * 
  * @param[in] interface - The pointer to the pool object.
  * @param[inout] token - The pointer to the element in the object pool.
  *
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_NO_MEM - No slots are available
+ * 
+ * @memberof IPoolAllocator
  */
-error_t object_pool_allocate(object_pool_t const * interface, void ** object_ptr);
+ErrorCode_t i_pool_allocator_allocate(IPoolAllocator_t const * interface, void ** object_ptr);
 
 /**
- * @brief  Frees an object for reuse in the future. Note all objects will be zeroed when freed.
+ * @brief Frees an object for reuse in the future. Note all objects will be zeroed when freed.
  * 
  * @param[in] interface - The pointer to the pool object
  * @param[inout] token - The token used to free. After calling this on a token, the token is set back to the invalid
  * token. (NULL)
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_OUT_OF_BOUNDS - The token provided is out of bounds.
+ * 
+ * @memberof IPoolAllocator
  */
-error_t object_pool_deallocate(object_pool_t const * interface, void ** object_ptr);
+ErrorCode_t i_pool_allocator_deallocate(IPoolAllocator_t const * interface, void ** object_ptr);
 
 /**
- * @brief  Gets the number of remaining slots in the pool.
+ * @brief Gets the number of remaining slots in the pool.
  * 
  * @param[in] interface  - The pointer to the pool object
  * 
  * @returns The number of unused slots in the pool
+ * 
+ * @memberof IPoolAllocator
  */
-size_t object_pool_get_available_count(object_pool_t const * interface);
+size_t i_pool_allocator_get_available_count(IPoolAllocator_t const * interface);

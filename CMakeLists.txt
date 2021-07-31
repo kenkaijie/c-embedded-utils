@@ -12,9 +12,15 @@ add_library(cemb)
 add_library(cemb::cemb ALIAS cemb)
 add_subdirectory(cemb)
 
+add_library(cemd_global_options INTERFACE)
+
 include(cmake/AddCEmbeddedModule.cmake)
 
 if (CEMB_CFG_PRODUCE_UNIT_TESTS)
+    target_compile_options(cemd_global_options INTERFACE --coverage -O0)
+    # we need NDEBUG here for the unit tests to force the asserts to go away, this is because the asserts cannot be tested
+    target_compile_definitions(cemd_global_options INTERFACE NDEBUG)
+    target_link_libraries(cemd_global_options INTERFACE gcov)
     enable_testing()
 endif()
 

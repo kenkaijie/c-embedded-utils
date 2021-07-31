@@ -15,5 +15,7 @@ if [[ -z $PROJECT_ROOT ]]; then
     exit 1
 fi
 
-DOXYGEN_OUTPUT_DIRECTORY=${PROJECT_ROOT}/build_temp/docs
+DOCS_DIR=${PROJECT_ROOT}/build_temp/docs
+
+DOXYGEN_OUTPUT_DIRECTORY=${DOCS_DIR}
 doxygen ${PROJECT_ROOT}/Doxyfile

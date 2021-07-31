@@ -1,6 +1,8 @@
 /**
  * @file
  * @brief File containing functions for serialising primitive data types.
+ * 
+ * Can be used as a building block for more complex packing.
  */
 #pragma once
 

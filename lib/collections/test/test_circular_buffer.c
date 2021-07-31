@@ -12,27 +12,15 @@
 #define ITEMS_IN_TEST_BUFFER (15)
 #define ITEMS_IN_RIPPLE_INSERT (16)
 
-static void test_interface_nulls(void ** state)
-{
-    error_t result;
-    circular_buffer_t circular;
-
-    result = circular_buffer_init(&circular, NULL);
-    assert_int_equal(ERR_NULL_POINTER, result);
-
-    result = circular_buffer_pop_byte(&circular, NULL);
-    assert_int_equal(ERR_NULL_POINTER, result);
-}
-
 static void test_ripple_insert(void ** state)
 {
     static uint8_t buffer[ITEMS_IN_RIPPLE_INSERT];
-    circular_buffer_config_t config = {
+    CircularBufferConfig_t config = {
         .buffer = buffer,
         .buffer_size = ITEMS_IN_RIPPLE_INSERT,
     };
-    circular_buffer_t circular;
-    error_t result;
+    CircularBuffer_t circular;
+    ErrorCode_t result;
 
     result = circular_buffer_init(&circular, &config);
     assert_int_equal(ERR_NONE, result);
@@ -56,12 +44,12 @@ static void test_ripple_insert(void ** state)
 static void test_correct_ordering_with_overflow(void ** state)
 {
     static uint8_t buffer[ITEMS_IN_TEST_BUFFER];
-    circular_buffer_config_t config = {
+    CircularBufferConfig_t config = {
         .buffer = buffer,
         .buffer_size = ITEMS_IN_TEST_BUFFER,
     };
-    circular_buffer_t circular;
-    error_t result;
+    CircularBuffer_t circular;
+    ErrorCode_t result;
 
     result = circular_buffer_init(&circular, &config);
     assert_int_equal(ERR_NONE, result);
@@ -119,18 +107,13 @@ static void test_correct_ordering_with_overflow(void ** state)
 static void test_bad_config(void ** state)
 {
     static uint8_t buffer[ITEMS_IN_TEST_BUFFER];
-    circular_buffer_config_t config = {
+    CircularBufferConfig_t config = {
         .buffer = buffer,
         .buffer_size = ITEMS_IN_TEST_BUFFER,
     };
-    circular_buffer_t circular;
-    error_t result;
-    circular_buffer_config_t test_config = config;
-
-    test_config = config;
-    test_config.buffer = NULL;
-    result = circular_buffer_init(&circular, &test_config);
-    assert_int_equal(ERR_NULL_POINTER, result);
+    CircularBuffer_t circular;
+    ErrorCode_t result;
+    CircularBufferConfig_t test_config = config;
 
     test_config = config;
     test_config.buffer_size = 0;
@@ -141,12 +124,12 @@ static void test_bad_config(void ** state)
 static void test_deinit_prevents_actions(void ** state)
 {
     static uint8_t buffer[ITEMS_IN_TEST_BUFFER];
-    circular_buffer_config_t config = {
+    CircularBufferConfig_t config = {
         .buffer = buffer,
         .buffer_size = ITEMS_IN_TEST_BUFFER,
     };
-    circular_buffer_t circular;
-    error_t result;
+    CircularBuffer_t circular;
+    ErrorCode_t result;
     uint8_t dummy = 0;
 
     circular_buffer_deinit(&circular);
@@ -166,7 +149,6 @@ static void test_deinit_prevents_actions(void ** state)
 int test_circular_buffer_run_tests(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_interface_nulls),
         cmocka_unit_test(test_ripple_insert),
         cmocka_unit_test(test_correct_ordering_with_overflow),
         cmocka_unit_test(test_bad_config),

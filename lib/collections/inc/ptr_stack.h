@@ -7,13 +7,18 @@
 #include <stddef.h>
 #include "error_codes.h"
 
-typedef struct ptr_stack ptr_stack_t;
+typedef struct PtrStack PtrStack_t;
 
-struct ptr_stack
+/**
+ * @brief A stack implementaion for storing pointers.
+ * 
+ * Useful as a building block for a few other higher order data structures.
+ */
+struct PtrStack
 {
-    void ** m_stack;
-    size_t m_max_item_count;
-    size_t m_stack_top; /**< pointer to the next slot of the stack */
+    void ** stack;
+    size_t max_item_count;
+    size_t stack_top; /**< pointer to the next slot of the stack */
 };
 
 /**
@@ -24,15 +29,20 @@ struct ptr_stack
  * @param[in] stack_item_count - number of items in the stack
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_INVALID_ARG
+ * 
+ * @memberof PtrStack
  */
-error_t ptr_stack_init(ptr_stack_t * stack, void ** stack_buffer, size_t stack_item_count);
+ErrorCode_t ptr_stack_init(PtrStack_t * stack, void ** stack_buffer, size_t stack_item_count);
 
 /**
  * @brief Deinitialises the numeric stack
+ * 
+ * @param[in] stack - The pointer to the stack
+ * 
+ * @memberof PtrStack
  */
-void ptr_stack_deinit(ptr_stack_t * stack);
+void ptr_stack_deinit(PtrStack_t * stack);
 
 /**
  * @brief Gets the remaining size of the stack.
@@ -40,8 +50,10 @@ void ptr_stack_deinit(ptr_stack_t * stack);
  * @param[in] stack - The pointer to the stack
  * 
  * @returns The number of entries available
+ * 
+ * @memberof PtrStack
  */
-size_t ptr_stack_get_remaining_count(ptr_stack_t * stack);
+size_t ptr_stack_get_remaining_count(PtrStack_t * stack);
 
 /**
  * @brief  Pushes a value onto the stack.
@@ -51,8 +63,10 @@ size_t ptr_stack_get_remaining_count(ptr_stack_t * stack);
  * 
  * @retval #ERR_NONE
  * @retval #ERR_NO_MEM - Stack is full
+ * 
+ * @memberof PtrStack
  */
-error_t ptr_stack_push(ptr_stack_t * stack, void * value);
+ErrorCode_t ptr_stack_push(PtrStack_t * stack, void * value);
 
 /**
  * @brief  Pops a value from the stack.
@@ -61,7 +75,8 @@ error_t ptr_stack_push(ptr_stack_t * stack, void * value);
  * @param[inout] value - Value popped from the stack
  * 
  * @retval #ERR_NONE
- * @retval #ERR_NULL_POINTER
  * @retval #ERR_EMPTY - Stack has not values
+ * 
+ * @memberof PtrStack
  */
-error_t ptr_stack_pop(ptr_stack_t * stack, void ** value);
+ErrorCode_t ptr_stack_pop(PtrStack_t * stack, void ** value);

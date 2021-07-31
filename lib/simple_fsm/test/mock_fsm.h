@@ -19,17 +19,17 @@ enum e_simple_states
 
 typedef uint32_t state_event_t;
 
-size_t mock_fsm_state_a_on_entry(simple_fsm_t * fsm, void * context);
-size_t mock_fsm_state_a_on_event(simple_fsm_t * fsm, state_event_t const * event, void * context);
-size_t mock_fsm_state_a_on_exit(simple_fsm_t * fsm, void * context);
+size_t mock_fsm_state_a_on_entry(SimpleFSM_t * fsm, void * context);
+size_t mock_fsm_state_a_on_event(SimpleFSM_t * fsm, state_event_t const * event, void * context);
+size_t mock_fsm_state_a_on_exit(SimpleFSM_t * fsm, void * context);
 
-size_t mock_fsm_state_b_on_entry(simple_fsm_t * fsm, void * context);
-size_t mock_fsm_state_b_on_event(simple_fsm_t * fsm, state_event_t const * event, void * context);
-size_t mock_fsm_state_b_on_exit(simple_fsm_t * fsm, void * context);
+size_t mock_fsm_state_b_on_entry(SimpleFSM_t * fsm, void * context);
+size_t mock_fsm_state_b_on_event(SimpleFSM_t * fsm, state_event_t const * event, void * context);
+size_t mock_fsm_state_b_on_exit(SimpleFSM_t * fsm, void * context);
 
-size_t mock_fsm_state_c_on_entry(simple_fsm_t * fsm, void * context);
-size_t mock_fsm_state_c_on_event(simple_fsm_t * fsm, state_event_t const * event, void * context);
-size_t mock_fsm_state_c_on_exit(simple_fsm_t * fsm, void * context);
+size_t mock_fsm_state_c_on_entry(SimpleFSM_t * fsm, void * context);
+size_t mock_fsm_state_c_on_event(SimpleFSM_t * fsm, state_event_t const * event, void * context);
+size_t mock_fsm_state_c_on_exit(SimpleFSM_t * fsm, void * context);
 
 /**
  * @brief   Helper function to populate a On Entry/On Exit mock call.

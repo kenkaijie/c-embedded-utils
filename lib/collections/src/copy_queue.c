@@ -1,9 +1,12 @@
 #include "copy_queue.h"
+
+#include <assert.h>
 #include <string.h>
 
-static error_t copy_queue_validate_config(copy_queue_config_t const * config)
+static ErrorCode_t copy_queue_validate_config(CopyQueueConfig_t const * config)
 {
-    if (config->queue_buffer == NULL) return ERR_NULL_POINTER;
+    assert(config->queue_buffer);
+
     if (config->element_size == 0) return ERR_INVALID_ARG;
     if (config->queue_size == 0) return ERR_INVALID_ARG;
     if (config->element_count == 0) return ERR_INVALID_ARG;
@@ -11,66 +14,80 @@ static error_t copy_queue_validate_config(copy_queue_config_t const * config)
     return ERR_NONE;
 }
 
-error_t copy_queue_init(copy_queue_t * queue, copy_queue_config_t const * config)
+ErrorCode_t copy_queue_init(CopyQueue_t * queue, CopyQueueConfig_t const * config)
 {
-    if (config == NULL) return ERR_NULL_POINTER;
-    error_t ret = copy_queue_validate_config(config);
+    assert(queue);
+    assert(config);
+
+    ErrorCode_t ret = copy_queue_validate_config(config);
     if (ret != ERR_NONE) return ret;
 
-    queue->m_buffer = config->queue_buffer;
-    queue->m_element_size = config->element_size;
-    queue->m_max_size = config->element_count;
-    queue->m_count = 0;
-    queue->m_tail_idx = 0;
-    queue->m_head_idx = 0;
+    queue->buffer = config->queue_buffer;
+    queue->element_size = config->element_size;
+    queue->max_size = config->element_count;
+    queue->count = 0;
+    queue->tail_idx = 0;
+    queue->head_idx = 0;
 
     return ret;
 }
 
-void copy_queue_deinit(copy_queue_t * queue)
+void copy_queue_deinit(CopyQueue_t * queue)
 {
-    queue->m_buffer = NULL; 
-    queue->m_element_size = 0;
-    queue->m_max_size = 0;
-    queue->m_count = 0;
-    queue->m_tail_idx = 0;
-    queue->m_head_idx = 0;
+    assert(queue);
+
+    queue->buffer = NULL; 
+    queue->element_size = 0;
+    queue->max_size = 0;
+    queue->count = 0;
+    queue->tail_idx = 0;
+    queue->head_idx = 0;
 }
 
-error_t copy_queue_enqueue(copy_queue_t * queue, void const * element)
+ErrorCode_t copy_queue_enqueue(CopyQueue_t * queue, void const * element)
 {
-    if (element == NULL) return ERR_NULL_POINTER;
+    assert(queue);
+    assert(element);
+    
     if (copy_queue_get_remaining(queue) == 0) return ERR_NO_MEM;
-    memcpy((void *)&queue->m_buffer[queue->m_tail_idx], element, queue->m_element_size);
-    queue->m_tail_idx += queue->m_element_size;
-    queue->m_count++;
+    memcpy((void *)&queue->buffer[queue->tail_idx], element, queue->element_size);
+    queue->tail_idx += queue->element_size;
+    queue->count++;
     return ERR_NONE;
 }
 
-error_t copy_queue_dequeue(copy_queue_t * queue, void * element)
+ErrorCode_t copy_queue_dequeue(CopyQueue_t * queue, void * element)
 {
-    if (element == NULL) return ERR_NULL_POINTER;
+    assert(queue);
+    assert(element);
+
     if (copy_queue_get_size(queue) == 0) return ERR_EMPTY;
-    memcpy(element, (void *)&queue->m_buffer[queue->m_head_idx], queue->m_element_size);
-    queue->m_head_idx += queue->m_element_size;
-    queue->m_count--;
+    memcpy(element, (void *)&queue->buffer[queue->head_idx], queue->element_size);
+    queue->head_idx += queue->element_size;
+    queue->count--;
     return ERR_NONE;
 }
 
-error_t copy_queue_peek(copy_queue_t * queue, void * element)
+ErrorCode_t copy_queue_peek(CopyQueue_t * queue, void * element)
 {
-    if (element == NULL) return ERR_NULL_POINTER;
+    assert(queue);
+    assert(element);
+
     if (copy_queue_get_size(queue) == 0) return ERR_EMPTY;
-    memcpy(element, (void *)&queue->m_buffer[queue->m_head_idx], queue->m_element_size);
+    memcpy(element, (void *)&queue->buffer[queue->head_idx], queue->element_size);
     return ERR_NONE;
 }
 
-size_t copy_queue_get_remaining(copy_queue_t const * queue)
+size_t copy_queue_get_remaining(CopyQueue_t const * queue)
 {
-    return queue->m_max_size - queue->m_count;
+    assert(queue);
+
+    return queue->max_size - queue->count;
 }
 
-size_t copy_queue_get_size(copy_queue_t const * queue)
+size_t copy_queue_get_size(CopyQueue_t const * queue)
 {
-    return queue->m_count;
+    assert(queue);
+    
+    return queue->count;
 }
