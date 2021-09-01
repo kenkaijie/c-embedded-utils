@@ -23,6 +23,8 @@ static void publisher_callback_b(void * context, void const * event_data)
 
 static void test_bad_init(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     StaticEventPublisher_t pub;
     StaticEventPublisherEntry_t subscriber = {
@@ -40,6 +42,8 @@ static void test_bad_init(void ** state)
 
 static void test_publisher(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     StaticEventPublisher_t pub;
     int int_context = 5;
@@ -81,7 +85,9 @@ static void test_publisher(void ** state)
 
 static void test_safe_deinit(void ** state)
 {
-     ErrorCode_t ret;
+    (void)state;
+
+    ErrorCode_t ret;
     StaticEventPublisher_t pub;
     int int_context = 5;
     int int_event = 2;

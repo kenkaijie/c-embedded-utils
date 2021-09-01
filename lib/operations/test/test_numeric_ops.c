@@ -9,6 +9,8 @@
 
 static void test_power_of_2(void ** state)
 {
+    (void)state;
+    
     assert_false(numeric_ops_is_power_2_sz(0));
     assert_true(numeric_ops_is_power_2_sz(1));
     assert_true(numeric_ops_is_power_2_sz(2));

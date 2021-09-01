@@ -26,8 +26,10 @@ static SimpleFSMConfig_t const config = {
 /**
  *  @brief  This is just a test to ensure no funny business on the deinit, for this object, deinit does nothing.
  */
-static void test_deinit_does_not_fail()
+static void test_deinit_does_not_fail(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
 
@@ -44,6 +46,8 @@ static void test_deinit_does_not_fail()
  */
 static void test_not_started_state_machine(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
 
@@ -80,6 +84,8 @@ static void test_not_started_state_machine(void ** state)
  */
 static void test_start_bad_fsm_def(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
 
@@ -103,6 +109,8 @@ static void test_start_bad_fsm_def(void ** state)
  */
 static void test_invalid_config_no_states(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t test_config = config;
@@ -123,6 +131,8 @@ static void test_invalid_config_no_states(void ** state)
  */
 static void test_invalid_config_bad_max_transition(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t test_config = config;
@@ -137,6 +147,8 @@ static void test_invalid_config_bad_max_transition(void ** state)
  */
 static void test_simple_start(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t fsm_config = config;
@@ -158,6 +170,8 @@ static void test_simple_start(void ** state)
 
 static void test_start_out_of_bounds_checking(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t fsm_config = config;
@@ -178,6 +192,8 @@ static void test_start_out_of_bounds_checking(void ** state)
 
 static void test_on_event_out_of_bounds_checking(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t fsm_config = config;
@@ -209,6 +225,8 @@ static void test_on_event_out_of_bounds_checking(void ** state)
  */
 static void test_simple_start_transitions(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t fsm_config = config;
@@ -241,6 +259,8 @@ static void test_simple_start_transitions(void ** state)
  */
 static void test_looped_start(void ** state)
 {
+    (void)state;
+
     size_t cycles = 5;
     ErrorCode_t ret;
     SimpleFSM_t fsm;
@@ -280,6 +300,8 @@ static void test_looped_start(void ** state)
  */
 static void test_on_event_transitions(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     state_event_t const event = 0xBEEFCAFEU;
@@ -314,7 +336,9 @@ static void test_on_event_transitions(void ** state)
  */
 static void test_looped_transitions(void ** state)
 {
-    size_t cycles = 5;
+    (void)state;
+
+    size_t cycles = 5U;
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t fsm_config = config;
@@ -359,7 +383,8 @@ static void test_looped_transitions(void ** state)
  */
 static void test_event_stays_same_state(void ** state)
 {
-    size_t cycles = 5;
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t fsm_config = config;
@@ -388,12 +413,12 @@ static void test_event_stays_same_state(void ** state)
 
 static void test_force_stop_passes_through(void ** state)
 {
-    size_t cycles = 5;
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t fsm_config = config;
     fsm_config.initial_state = MOCK_FSM_STATE_C;
-    state_event_t event = 0xDEADBEEF;
 
     mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_c_on_entry, MOCK_FSM_STATE_C, &fsm, fsm_config.context, 1);
     mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_c_on_exit, MOCK_FSM_STATE_C, &fsm, fsm_config.context, 1);
@@ -417,12 +442,12 @@ static void test_force_stop_passes_through(void ** state)
 
 static void test_force_stop_returns_error_if_state_fails_transition(void ** state)
 {
-    size_t cycles = 5;
+    (void)state;
+
     ErrorCode_t ret;
     SimpleFSM_t fsm;
     SimpleFSMConfig_t fsm_config = config;
     fsm_config.initial_state = MOCK_FSM_STATE_C;
-    state_event_t event = 0xDEADBEEF;
 
     mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_c_on_entry, MOCK_FSM_STATE_C, &fsm, fsm_config.context, 1);
     mock_fsm_setup_on_entry_exit_mock_with_count(mock_fsm_state_c_on_exit, MOCK_FSM_STATE_A, &fsm, fsm_config.context, 1);

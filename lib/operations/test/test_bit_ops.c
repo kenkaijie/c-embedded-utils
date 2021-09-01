@@ -9,10 +9,12 @@
 
 static void test_hamming_weight(void ** state)
 {
+    (void)state;
+    
     uint32_t weight_0 = 0;
-    uint32_t weight_1 = 0b100000;
+    uint32_t weight_1 = 0x800;
     uint32_t weight_32 = UINT32_MAX;
-    uint32_t weight_5 = 0b100010010110;
+    uint32_t weight_5 = 0xF80;
 
     assert_int_equal(0, bit_ops_hamming_weight_u32(weight_0));
     assert_int_equal(1, bit_ops_hamming_weight_u32(weight_1));

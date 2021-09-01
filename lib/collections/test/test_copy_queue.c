@@ -13,6 +13,8 @@
 
 static void test_correct_fifo_ordering(void ** state)
 {
+    (void)state;
+
     static int queue_buffer[ITEMS_IN_TEST_QUEUE];
 
     CopyQueueConfig_t config = {
@@ -77,6 +79,8 @@ static void test_correct_fifo_ordering(void ** state)
 
 static void test_bad_config(void ** state)
 {
+    (void)state;
+
     static int queue_buffer[ITEMS_IN_TEST_QUEUE];
     CopyQueueConfig_t base_config = {
         .element_count = ITEMS_IN_TEST_QUEUE,
@@ -123,6 +127,8 @@ static void test_bad_config(void ** state)
 
 static void test_deinit_prevents_actions(void ** state)
 {
+    (void)state;
+    
     CopyQueue_t queue;
     int dummy;
     ErrorCode_t result;

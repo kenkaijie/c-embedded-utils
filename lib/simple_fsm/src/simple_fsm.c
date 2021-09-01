@@ -9,8 +9,6 @@
  */
 static ErrorCode_t simple_fsm_resolve_transitions(SimpleFSM_t * fsm, size_t next_state)
 {
-    SimpleFSMStateDelegates_t const * handler;
-    ErrorCode_t ret;
     size_t transitions_count = 0;
     bool is_transition_limit_reached = false;
 
@@ -109,7 +107,6 @@ ErrorCode_t simple_fsm_force_stop(SimpleFSM_t * fsm)
 {
     assert(fsm);
 
-    ErrorCode_t ret;
     if (!fsm->started) return ERR_NOOP;
     SimpleFSMStateDelegates_t const * handler = &fsm->config.state_delegates[fsm->state];
     size_t next_state = handler->on_exit_handler(fsm, fsm->config.context);
@@ -122,7 +119,6 @@ ErrorCode_t simple_fsm_on_event(SimpleFSM_t * fsm, void const * event)
 {
     assert(fsm);
 
-    ErrorCode_t ret;
     if (!fsm->started) return ERR_NOT_INITIALISED;
     SimpleFSMStateDelegates_t const * handler = &fsm->config.state_delegates[fsm->state];
     size_t next_state = handler->on_event_handler(fsm, event, fsm->config.context);
