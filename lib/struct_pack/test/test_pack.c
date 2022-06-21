@@ -12,6 +12,8 @@
  */
 static void test_overrun_checker(void ** state)
 {
+    (void)state;
+    
     assert_true(pack_is_within_buffer(0, 0, 0));
     assert_true(pack_is_within_buffer(0, 0, 1));
     assert_false(pack_is_within_buffer(0, 1, 0));

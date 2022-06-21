@@ -1,5 +1,4 @@
-#!/bin/bash
-set -e
+#!/bin/bash -e
 
 if [[ -n $CEMB_UTILS_DEV_ENV ]]; then
     echo "Don't run this in your docker, run the script used inside the build environment instead."
