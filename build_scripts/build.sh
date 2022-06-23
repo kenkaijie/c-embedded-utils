@@ -1,5 +1,4 @@
-#!/bin/bash
-set -e
+#!/bin/bash -e
 
 if [[ -n $CEMB_UTILS_DEV_ENV ]]; then
     echo "Don't run this in your docker, run the script used inside the build environment instead."
@@ -23,6 +22,6 @@ fi
 
 # bind our project root to the internal project root, then set PROJECT_ROOT as the internal
 docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="${DOCKER_PROJECT_ROOT}" \
--e "PROJECT_ROOT=${DOCKER_PROJECT_ROOT}" c-embedded-utils "//bin/bash ${DOCKER_PROJECT_ROOT}/build_scripts/dev_env_build.sh"
+-e "PROJECT_ROOT=${DOCKER_PROJECT_ROOT}" c-embedded-utils "${DOCKER_PROJECT_ROOT}/build_scripts/dev_env_build.sh"
 
 popd

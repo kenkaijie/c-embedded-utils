@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # Runs the doxygen file generation for this project
-
-set -e
 
 if [[ -z $CEMB_UTILS_DEV_ENV ]]; then
     echo "Please run this in the appropriate development environment (i.e docker, or manually set up)"

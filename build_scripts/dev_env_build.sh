@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # This file is to be called WITHIN the dev env context. It performs this by checking the tag set by the dockerfile (CEMB_UTILS_DEV_ENV)
-
-set -e
 
 if [[ -z $CEMB_UTILS_DEV_ENV ]]; then
     echo "Please run this in the appropriate development environment (i.e docker, or manually set up)"
@@ -15,9 +13,9 @@ if [[ -z $PROJECT_ROOT ]]; then
     exit 1
 fi
 
-ARTEFACTS_DIR=${PROJECT_ROOT}/build_temp 
-BUILD_DIR=${ARTEFACTS_DIR}/build
-COVERAGE_DIR=${ARTEFACTS_DIR}/coverage
+ARTEFACTS_DIR="${PROJECT_ROOT}/build_temp"
+BUILD_DIR="${ARTEFACTS_DIR}/build"
+COVERAGE_DIR="${ARTEFACTS_DIR}/coverage"
 
 # make all directories
 mkdir -p ${ARTEFACTS_DIR}
@@ -33,11 +31,10 @@ ctest -T Test -V --no-compress-output --output-on-failure --no-tests=error
 
 popd
 
-
 #coverage
-pushd ${COVERAGE_DIR}
+pushd ${PROJECT_ROOT}
 
-gcovr -f ${PROJECT_ROOT}/src -f ${PROJECT_ROOT}/tests -f ${PROJECT_ROOT}/include --xml-pretty> coverage_report.xml
-gcovr -f ${PROJECT_ROOT}/src -f ${PROJECT_ROOT}/tests -f ${PROJECT_ROOT}/include --html --html-details -o coverage_report.html
+gcovr -f src -f tests -f include --xml-pretty > "${COVERAGE_DIR}/coverage_report.xml"
+gcovr -f src -f tests -f include --html --html-details -o "${COVERAGE_DIR}/coverage_report.html"
 
 popd
