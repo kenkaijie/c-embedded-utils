@@ -7,15 +7,9 @@ option(CEMB_CFG_OWN_CMAKE "This project uses a target cmocka as the target for i
 option(CEMB_CFG_PRODUCE_UNIT_TESTS "Produces unit testing for library" ON)
 
 # Inclusions should be done after options are set.
-
 add_library(cemb)
 add_library(cemb::cemb ALIAS cemb)
-
 target_include_directories(cemb PUBLIC include)
-
-add_library(cemd_global_options INTERFACE)
-
-include(cmake/AddCEmbeddedModule.cmake)
 
 add_subdirectory(extern)
 
@@ -25,7 +19,6 @@ if (CEMB_CFG_PRODUCE_UNIT_TESTS)
     add_library(cemb::cemb_test ALIAS cemb_test)
     target_include_directories(cemb_test PRIVATE include)
     target_link_libraries(cemb_test PRIVATE cemb::cemb cmocka::cmocka)
-
     add_subdirectory(tests)
 endif()
 

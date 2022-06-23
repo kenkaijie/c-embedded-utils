@@ -1,5 +1,7 @@
 #include <cemb/bsearch_iter.h>
 
+#include <assert.h>
+
 static int32_t bsearch_get_next_pivot_offset(int32_t current_pivot_offset)
 {
     if (current_pivot_offset == 0)
@@ -23,6 +25,8 @@ static int32_t bsearch_get_midpoint_safe(int32_t left_idx, int32_t right_idx)
 
 int bsearch_iter_init(BsearchIterator_t *iter, int32_t start_idx, int32_t stop_idx)
 {
+    assert(iter);
+
     if (start_idx >= stop_idx) return 1;
 
     iter->status = BSEARCH_CONTINUE;
@@ -38,6 +42,8 @@ int bsearch_iter_init(BsearchIterator_t *iter, int32_t start_idx, int32_t stop_i
 
 void bsearch_iter_deinit(BsearchIterator_t *iter)
 {
+    assert(iter);
+
     if (iter->status == BSEARCH_CONTINUE)
     {
         iter->status = BSEARCH_DONE_NOT_FOUND;
@@ -46,11 +52,15 @@ void bsearch_iter_deinit(BsearchIterator_t *iter)
 
 int32_t bsearch_iter_get_check_index(BsearchIterator_t *iter)
 {
+    assert(iter);
+    
     return iter->pivot_idx + iter->pivot_offset;
 }
 
 int32_t bsearch_iter_get_found_index(BsearchIterator_t *iter)
 {
+    assert(iter);
+
     if (iter->status == BSEARCH_DONE_FOUND)
     {
         return iter->pivot_idx + iter->pivot_offset;
@@ -63,11 +73,15 @@ int32_t bsearch_iter_get_found_index(BsearchIterator_t *iter)
 
 BsearchIteratorStatus_t bsearch_iter_status(BsearchIterator_t *iter)
 {
+    assert(iter);
+
     return iter->status;
 }
 
 void bsearch_iter_notify(BsearchIterator_t *iter, BsearchNotification_t notification)
 {
+    assert(iter);
+
     // do nothing
     if (iter->status != BSEARCH_CONTINUE)
     {

@@ -25,10 +25,10 @@ mkdir -p ${COVERAGE_DIR}
 # build for coverage and test
 pushd ${BUILD_DIR}
 
-export CFLAGS="--coverage"
+export CFLAGS="--coverage -DNDEBUG"
 export LDFLAGS="--coverage -lgcov"
 cmake ${PROJECT_ROOT}
-cmake --build  .
+cmake --build . --verbose
 ctest -T Test -V --no-compress-output --output-on-failure --no-tests=error
 
 popd
