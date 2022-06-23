@@ -9,6 +9,8 @@
 
 static void test_allocation(void ** state)
 {
+    (void)state;
+
     void * object_pointer = NULL;
     ErrorCode_t ret;
     IPoolAllocator_t interface;
@@ -22,10 +24,12 @@ static void test_allocation(void ** state)
     ret = i_pool_allocator_allocate(&interface, &object_pointer);
     assert_int_equal(ERR_NONE, ret);
     assert_ptr_equal((void *)0xDEADBEEF, object_pointer);
-};  
+}
 
 static void test_deallocate(void ** state)
 {
+    (void)state;
+
     void * object_pointer = 0;
     ErrorCode_t ret;
     IPoolAllocator_t interface;
@@ -43,8 +47,9 @@ static void test_deallocate(void ** state)
 
 static void test_get_unused_count(void ** state)
 {
+    (void)state;
+
     size_t unused_count = 0;
-    ErrorCode_t ret;
     IPoolAllocator_t interface;
     void * context = (void *)0xDEADBEEF;
 

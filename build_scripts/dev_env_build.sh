@@ -22,11 +22,13 @@ mkdir -p ${ARTEFACTS_DIR}
 mkdir -p ${BUILD_DIR}
 mkdir -p ${COVERAGE_DIR}
 
-# build and test
+# build for coverage and test
 pushd ${BUILD_DIR}
 
+export CFLAGS="--coverage"
+export LDFLAGS="--coverage -lgcov"
 cmake ${PROJECT_ROOT}
-cmake --build .
+cmake --build  .
 ctest -T Test -V --no-compress-output --output-on-failure --no-tests=error
 
 popd

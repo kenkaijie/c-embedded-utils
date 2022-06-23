@@ -21,12 +21,13 @@ struct test_static_pool_dummy_data
 
 static void test_correct_interface(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     size_t const object_size = sizeof(test_static_pool_dummy_data_t);
     size_t const object_count = 16;
     uint8_t buffer[object_size * object_count];
     void * allocation_stack[object_count];
-    test_static_pool_dummy_data_t * object_pointer;
 
     StaticPoolConfig_t config = {
         .buffer = buffer,
@@ -53,10 +54,11 @@ static void test_correct_interface(void ** state)
 
 static void test_invalid_configs(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     uint8_t buffer[TEST_OBJECT_SIZE_BYTES * TEST_OBJECT_COUNT] = {};
     void * allocation_stack[TEST_OBJECT_COUNT] = {};
-    test_static_pool_dummy_data_t * object_pointer;
 
     StaticPoolConfig_t config = {
         .buffer = buffer,
@@ -77,12 +79,13 @@ static void test_invalid_configs(void ** state)
 
 static void test_deallocate_twice_fails(void ** state)
 {
- ErrorCode_t ret;
+    (void)state;
+
+    ErrorCode_t ret;
     uint8_t buffer[TEST_OBJECT_SIZE_BYTES * TEST_OBJECT_COUNT] = {};
     void * allocation_stack[TEST_OBJECT_COUNT] = {};
     void * token1 = NULL;
     void * token2 = NULL;
-    test_static_pool_dummy_data_t * object_pointer = NULL;
 
     StaticPoolConfig_t config = {
         .buffer = buffer,
@@ -122,6 +125,8 @@ static void test_deallocate_twice_fails(void ** state)
 
 static void test_allocation_fills_and_unfills_correctly(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     uint8_t buffer[TEST_OBJECT_SIZE_BYTES * TEST_OBJECT_COUNT] = {};
     void * allocation_stack[TEST_OBJECT_COUNT] = {};
@@ -169,7 +174,7 @@ static void test_allocation_fills_and_unfills_correctly(void ** state)
         {
             if (idx_i != idx_j)
             {
-                assert_true((ptrdiff_t)object_pointers[idx_i] - (ptrdiff_t)object_pointers[idx_j] >= sizeof(test_static_pool_dummy_data_t));
+                assert_true((size_t)((ptrdiff_t)object_pointers[idx_i] - (ptrdiff_t)object_pointers[idx_j]) >= sizeof(test_static_pool_dummy_data_t));
             }
         }
     }

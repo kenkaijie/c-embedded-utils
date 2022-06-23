@@ -9,9 +9,10 @@
 
 static void test_bad_init(void ** state)
 {
+    (void)state;
+
     PtrStack_t stack;
     void * stack_buffer[15];
-    size_t stack_item_count = 15;
     ErrorCode_t ret;
 
     ret = ptr_stack_init(&stack, stack_buffer, 0);
@@ -20,6 +21,8 @@ static void test_bad_init(void ** state)
 
 static void test_insert(void ** state)
 {
+    (void)state;
+    
     PtrStack_t stack;
     void * stack_buffer[4];
     size_t stack_item_count = 4;

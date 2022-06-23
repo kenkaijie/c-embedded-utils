@@ -20,6 +20,8 @@ static bool max_heap_compare(void const * const parent, void const * const child
 
 static void test_bad_init(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     void * heap_storage[HEAP_ITEM_COUNT];
     BoundedHeap_t heap;
@@ -40,6 +42,8 @@ static void test_bad_init(void ** state)
  */ 
 static void test_safe_deinit(void ** state)
 {
+    (void)state;
+
     ErrorCode_t ret;
     void * heap_storage[HEAP_ITEM_COUNT];
     BoundedHeap_t heap;
@@ -136,6 +140,8 @@ static void test_max_heap_test_scaffold(void ** values, void ** heap_storage, vo
 
 static void test_ascending_max_heap(void ** state)
 {
+    (void)state;
+
     void * values[HEAP_ITEM_COUNT] = {(void *)0, (void *)1, (void *)2, (void *)3, (void *)4, (void *)5, (void *)6, (void *)7, (void *)8, (void *)9};
     void * min_value = 0;
     void * heap_storage[HEAP_ITEM_COUNT];
@@ -144,6 +150,8 @@ static void test_ascending_max_heap(void ** state)
 
 static void test_descending_max_heap(void ** state)
 {
+    (void)state;
+
     void * values[HEAP_ITEM_COUNT] = {(void *)9, (void *)8, (void *)7, (void *)6, (void *)5, (void *)4, (void *)3, (void *)2, (void *)1, (void *)0};
     void * min_value = 0;
     void * heap_storage[HEAP_ITEM_COUNT];
@@ -152,6 +160,8 @@ static void test_descending_max_heap(void ** state)
 
 static void test_random_order_max_heap(void ** state)
 {
+    (void)state;
+    
     void * values[HEAP_ITEM_COUNT] = {(void *)1230, (void *)5, (void *)99, (void *)3, (void *)0, (void *)6, (void *)22, (void *)0, (void *)5, (void *)5};
     void * min_value = 0;
     void * heap_storage[HEAP_ITEM_COUNT];

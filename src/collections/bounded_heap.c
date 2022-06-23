@@ -16,17 +16,17 @@ static size_t bounded_heap_get_next_empty_index(BoundedHeap_t * heap)
     return heap->items_in_heap;
 }
 
-static size_t bounded_heap_get_index_of_parent(BoundedHeap_t * heap, size_t index)
+static size_t bounded_heap_get_index_of_parent(size_t index)
 {
     return (index-1)/2;
 }
 
-static size_t bounded_heap_get_index_of_left_child(BoundedHeap_t * heap, size_t index)
+static size_t bounded_heap_get_index_of_left_child(size_t index)
 {
     return (2*index)+1;
 }
 
-static size_t bounded_heap_get_index_of_right_child(BoundedHeap_t * heap, size_t index)
+static size_t bounded_heap_get_index_of_right_child(size_t index)
 {
     return (2*index)+2;
 }
@@ -95,8 +95,8 @@ ErrorCode_t bounded_heap_pop(BoundedHeap_t * heap, void ** heap_item)
     bool done = false;
     while (!done)
     {
-        size_t left_child_idx = bounded_heap_get_index_of_left_child(heap, parent_idx);
-        size_t right_child_idx = bounded_heap_get_index_of_right_child(heap, parent_idx);
+        size_t left_child_idx = bounded_heap_get_index_of_left_child(parent_idx);
+        size_t right_child_idx = bounded_heap_get_index_of_right_child(parent_idx);
 
         if ((left_child_idx >= bounded_heap_get_size(heap)) || (right_child_idx >= bounded_heap_get_size(heap))) break;
 
@@ -159,7 +159,7 @@ ErrorCode_t bounded_heap_push(BoundedHeap_t * heap, void * heap_item)
     {
         if (child_idx == 0) break;
         
-        size_t parent_idx = bounded_heap_get_index_of_parent(heap, child_idx);
+        size_t parent_idx = bounded_heap_get_index_of_parent(child_idx);
 
         if (heap->config.compare(bounded_heap_get_value_at(heap, parent_idx),
                                    bounded_heap_get_value_at(heap, child_idx)))

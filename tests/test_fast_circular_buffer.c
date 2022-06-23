@@ -14,6 +14,8 @@
 
 static void test_ripple_insert(void ** state)
 {
+    (void)state;
+
     static uint8_t buffer[ITEMS_IN_RIPPLE_INSERT];
     FastCircularBufferConfig_t config = {
         .buffer = buffer,
@@ -46,6 +48,8 @@ static void test_ripple_insert(void ** state)
  */
 static void test_correct_ordering_with_overflow(void ** state)
 {
+    (void)state;
+
     static uint8_t buffer[ITEMS_IN_TEST_BUFFER];
     FastCircularBufferConfig_t config = {
         .buffer = buffer,
@@ -110,6 +114,8 @@ static void test_correct_ordering_with_overflow(void ** state)
 
 static void test_bad_config(void ** state)
 {
+    (void)state;
+
     static uint8_t buffer[ITEMS_IN_TEST_BUFFER];
     FastCircularBufferConfig_t config = {
         .buffer = buffer,
@@ -137,11 +143,8 @@ static void test_bad_config(void ** state)
 
 static void test_deinit_prevents_actions(void ** state)
 {
-    static uint8_t buffer[ITEMS_IN_TEST_BUFFER];
-    FastCircularBufferConfig_t config = {
-        .buffer = buffer,
-        .buffer_size = ITEMS_IN_TEST_BUFFER,
-    };
+    (void)state;
+
     FastCircularBuffer_t circular;
     ErrorCode_t result;
     uint8_t dummy = 0;

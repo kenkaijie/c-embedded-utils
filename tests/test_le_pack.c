@@ -29,6 +29,8 @@ static void test_le_test_rig(PackSerialiseFunction_t encode, PackDeserialiseFunc
 
     bytes_consumed = decode(actual_value, test_offset, actual_buf, buffer_size);
     assert_int_equal(expected_type_size, bytes_consumed);
+
+    assert_memory_equal(expected_buf, actual_buf, buffer_size);
 }
 
 /**
@@ -37,6 +39,8 @@ static void test_le_test_rig(PackSerialiseFunction_t encode, PackDeserialiseFunc
  */
 static void test_le_u8(void ** state)
 {
+    (void)state;
+
     size_t expected_type_size = PACK_SIZE_UINT8_T;
     uint8_t expected_value = 0x12;
     uint8_t actual_value = expected_value - 1;
@@ -44,7 +48,6 @@ static void test_le_u8(void ** state)
     uint8_t actual_buffer[5] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] = {0xFF, 0xFF, 0xFF, 0x12, 0xFF};
     size_t buffer_size = sizeof(actual_buffer);
-    size_t bytes_consumed = 0;
 
     test_le_test_rig((PackSerialiseFunction_t)le_pack_u8, (PackDeserialiseFunction_t)le_unpack_u8, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
     assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
@@ -53,6 +56,8 @@ static void test_le_u8(void ** state)
 
 static void test_le_u16(void ** state)
 {
+    (void)state;
+    
     size_t expected_type_size = PACK_SIZE_UINT16_T;
     uint16_t expected_value = 0x1234;
     uint16_t actual_value = expected_value - 1;
@@ -60,7 +65,6 @@ static void test_le_u16(void ** state)
     uint8_t actual_buffer[5] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] = {0xFF, 0xFF, 0xFF, 0x34, 0x12};
     size_t buffer_size = sizeof(actual_buffer);
-    size_t bytes_consumed = 0;
 
     test_le_test_rig((PackSerialiseFunction_t)le_pack_u16, (PackDeserialiseFunction_t)le_unpack_u16, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
     assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
@@ -69,6 +73,8 @@ static void test_le_u16(void ** state)
 
 static void test_le_u32(void ** state)
 {
+    (void)state;
+
     size_t expected_type_size = PACK_SIZE_UINT32_T;
     uint32_t expected_value = 0x12345678U;
     uint32_t actual_value = expected_value - 1;
@@ -76,7 +82,6 @@ static void test_le_u32(void ** state)
     uint8_t actual_buffer[9] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] = {0xFF, 0xFF, 0xFF, 0x78, 0x56, 0x34, 0x12, 0xFF, 0xFF};
     size_t buffer_size = sizeof(actual_buffer);
-    size_t bytes_consumed = 0;
 
     test_le_test_rig((PackSerialiseFunction_t)le_pack_u32, (PackDeserialiseFunction_t)le_unpack_u32, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
     assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
@@ -85,6 +90,8 @@ static void test_le_u32(void ** state)
 
 static void test_le_u64(void ** state)
 {
+    (void)state;
+
     size_t expected_type_size = PACK_SIZE_UINT64_T;
     uint64_t expected_value = 0x12345678ABCDEF92UL;
     uint64_t actual_value = expected_value - 1;
@@ -92,7 +99,6 @@ static void test_le_u64(void ** state)
     uint8_t actual_buffer[15] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] =  {0xFF, 0xFF, 0xFF, 0x92, 0xEF, 0xCD, 0xAB, 0x78, 0x56, 0x34, 0x12, 0xFF, 0xFF, 0xFF, 0xFF};
     size_t buffer_size = sizeof(actual_buffer);
-    size_t bytes_consumed = 0;
 
     test_le_test_rig((PackSerialiseFunction_t)le_pack_u64, (PackDeserialiseFunction_t)le_unpack_u64, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
     assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
@@ -102,6 +108,8 @@ static void test_le_u64(void ** state)
 
 static void test_le_s8(void ** state)
 {
+    (void)state;
+
     size_t expected_type_size = PACK_SIZE_INT8_T;
     int8_t expected_value = 0x12;
     int8_t actual_value = expected_value - 1;
@@ -109,7 +117,6 @@ static void test_le_s8(void ** state)
     uint8_t actual_buffer[9] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] = {0xFF, 0xFF, 0xFF, 0x12, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     size_t buffer_size = sizeof(actual_buffer);
-    size_t bytes_consumed = 0;
 
     test_le_test_rig((PackSerialiseFunction_t)le_pack_s8, (PackDeserialiseFunction_t)le_unpack_s8, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
     assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
@@ -118,14 +125,15 @@ static void test_le_s8(void ** state)
 
 static void test_le_s16(void ** state)
 {
+    (void)state;
+
     size_t expected_type_size = PACK_SIZE_INT16_T;
-    int16_t expected_value = 0x83FE;
+    int16_t expected_value = (int16_t)0x83FE;
     int16_t actual_value = expected_value - 1;
     size_t offset = 3;
     uint8_t actual_buffer[9] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] = {0xFF, 0xFF, 0xFF, 0xFE, 0x83, 0xFF, 0xFF, 0xFF, 0xFF};
     size_t buffer_size = sizeof(actual_buffer);
-    size_t bytes_consumed = 0;
 
     test_le_test_rig((PackSerialiseFunction_t)le_pack_s16, (PackDeserialiseFunction_t)le_unpack_s16, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
     assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
@@ -134,6 +142,8 @@ static void test_le_s16(void ** state)
 
 static void test_le_s32(void ** state)
 {
+    (void)state;
+
     size_t expected_type_size = PACK_SIZE_INT32_T;
     int32_t expected_value = 0xFACD1234;
     int32_t actual_value = expected_value - 1;
@@ -141,7 +151,6 @@ static void test_le_s32(void ** state)
     uint8_t actual_buffer[9] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] = {0xFF, 0xFF, 0xFF, 0x34, 0x12, 0xCD, 0xFA, 0xFF, 0xFF};
     size_t buffer_size = sizeof(actual_buffer);
-    size_t bytes_consumed = 0;
 
     test_le_test_rig((PackSerialiseFunction_t)le_pack_s32, (PackDeserialiseFunction_t)le_unpack_s32, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
     assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
@@ -150,6 +159,8 @@ static void test_le_s32(void ** state)
 
 static void test_le_s64(void ** state)
 {
+    (void)state;
+
     size_t expected_type_size = PACK_SIZE_INT64_T;
     int64_t expected_value = (int64_t)0x12345678ABCDEF92UL;
     int64_t actual_value = expected_value - 1;
@@ -157,7 +168,6 @@ static void test_le_s64(void ** state)
     uint8_t actual_buffer[15] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] =  {0xFF, 0xFF, 0xFF, 0x92, 0xEF, 0xCD, 0xAB, 0x78, 0x56, 0x34, 0x12, 0xFF, 0xFF, 0xFF, 0xFF};
     size_t buffer_size = sizeof(actual_buffer);
-    size_t bytes_consumed = 0;
 
     test_le_test_rig((PackSerialiseFunction_t)le_pack_s64, (PackDeserialiseFunction_t)le_unpack_s64, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
     assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
@@ -166,6 +176,8 @@ static void test_le_s64(void ** state)
 
 static void test_le_bool(void ** state)
 {
+    (void)state;
+
     size_t expected_type_size = PACK_SIZE_BOOL;
     bool expected_value = true;
     bool actual_value = expected_value - 1;
@@ -173,7 +185,6 @@ static void test_le_bool(void ** state)
     uint8_t actual_buffer[9] =                       {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(actual_buffer)] = {0xFF, 0xFF, 0xFF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     size_t buffer_size = sizeof(actual_buffer);
-    size_t bytes_consumed = 0;
 
     test_le_test_rig((PackSerialiseFunction_t)le_pack_bool, (PackDeserialiseFunction_t)le_unpack_bool, expected_type_size, offset, &expected_value, &actual_value, expected_buffer, actual_buffer, buffer_size);
     assert_memory_equal(expected_buffer, actual_buffer, buffer_size);
@@ -182,11 +193,14 @@ static void test_le_bool(void ** state)
 
 static void test_le_raw(void ** state)
 {
+    (void)state;
+
     uint8_t raw_buffer[7] =                         {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE};
     uint8_t actual_buffer[sizeof(raw_buffer)] =     {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     uint8_t expected_buffer[sizeof(raw_buffer)] =   {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE};
     uint8_t decoded_buffer[sizeof(raw_buffer)] =    {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     // this should fail, as the buffers are exact sizes
+
     size_t bytes_consumed;
     bytes_consumed = le_pack_raw(raw_buffer, sizeof(raw_buffer), 1, actual_buffer, sizeof(actual_buffer));
     assert_int_equal(0, bytes_consumed);

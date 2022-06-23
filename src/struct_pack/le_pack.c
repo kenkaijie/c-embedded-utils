@@ -77,8 +77,8 @@ size_t le_unpack_u16(uint16_t * element, size_t offset, uint8_t const * data, si
 {
     if (pack_is_within_buffer(offset, PACK_SIZE_UINT16_T, data_len))
     {
-        *element = ((uint16_t)data[offset + 0] << 0) + 
-                   ((uint16_t)data[offset + 1] << 8);
+        *element = ((uint16_t)data[offset + 0] << 0U) + 
+                   ((uint16_t)data[offset + 1] << 8U);
         return PACK_SIZE_UINT16_T;
     }
     return 0;
