@@ -37,7 +37,7 @@ popd
 #coverage
 pushd ${COVERAGE_DIR}
 
-gcovr -r ${PROJECT_ROOT} ${BUILD_DIR} --xml-pretty  --exclude-directories='.*\/extern\/.*' > coverage_report.xml
-gcovr -r ${PROJECT_ROOT} ${BUILD_DIR} --html --html-details -o coverage_report.html  --exclude-directories='.*\/extern\/.*'
+gcovr -f ${PROJECT_ROOT}/src -f ${PROJECT_ROOT}/tests -f ${PROJECT_ROOT}/include --xml-pretty> coverage_report.xml
+gcovr -f ${PROJECT_ROOT}/src -f ${PROJECT_ROOT}/tests -f ${PROJECT_ROOT}/include --html --html-details -o coverage_report.html
 
 popd

@@ -1,0 +1,24 @@
+buildType:
+  default: debug
+  choices:
+    debug:
+      short: Debug
+      long: Emit debug information
+      buildType: Debug
+    release:
+      short: Release
+      long: Optimize generated code
+      buildType: Release
+withCoverage:
+  default: 'yes'
+  choices:
+    'yes':
+      short: Coverage
+      long: Enable building with coverage
+      settings:
+        CMAKE_CXX_FLAGS: "--coverage"
+        CMAKE_C_FLAGS: "--coverage"
+        CMAKE_EXE_LINKER_FLAGS: "--coverage"
+    'no':
+      short: No Coverage
+      long: Enable building without coverage

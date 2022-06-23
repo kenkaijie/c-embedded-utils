@@ -43,9 +43,7 @@ typedef enum MyEnum {
 } MyEnum_t;
 
 /* named structs */
-typedef struct MyCStruct MyCStruct_t;
-
-struct MyCStruct {
+typedef struct MyCStruct {
 
     int my_variable; /*  */
 

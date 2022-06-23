@@ -10,20 +10,33 @@ option(CEMB_CFG_PRODUCE_UNIT_TESTS "Produces unit testing for library" ON)
 
 add_library(cemb)
 add_library(cemb::cemb ALIAS cemb)
-add_subdirectory(cemb)
+
+target_include_directories(cemb PUBLIC include)
 
 add_library(cemd_global_options INTERFACE)
 
 include(cmake/AddCEmbeddedModule.cmake)
 
+add_subdirectory(extern)
+
 if (CEMB_CFG_PRODUCE_UNIT_TESTS)
-    target_compile_options(cemd_global_options INTERFACE --coverage -O0)
+    enable_testing()
+    add_library(cemb_test)
+    add_library(cemb::cemb_test ALIAS cemb_test)
+    target_include_directories(cemb_test PRIVATE include)
+    target_link_libraries(cemb_test PRIVATE cemb::cemb cmocka::cmocka)
+
+    add_subdirectory(tests)
+    
+    target_compile_options(cemd_global_options INTERFACE --coverage -Og)
     # we need NDEBUG here for the unit tests to force the asserts to go away, this is because the asserts cannot be tested
     target_compile_definitions(cemd_global_options INTERFACE NDEBUG)
     target_link_libraries(cemd_global_options INTERFACE gcov)
-    enable_testing()
+    
+    target_link_libraries(cemb PRIVATE cemd_global_options)
+    target_link_libraries(cemb_test PRIVATE cemd_global_options)
+    target_link_libraries(cemb_test_runner PRIVATE cemd_global_options)
+
 endif()
 
-add_subdirectory(extern)
-
-add_subdirectory(lib)
+add_subdirectory(src)
