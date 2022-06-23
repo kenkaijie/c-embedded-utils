@@ -11,7 +11,7 @@ if [[ -z $PROJECT_ROOT ]]; then
     exit 1
 fi
 
-DOCKER_PROJECT_ROOT="//usr/project"
+DOCKER_PROJECT_ROOT="/usr/project"
 
 pushd ${PROJECT_ROOT}
 
