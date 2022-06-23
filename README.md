@@ -36,4 +36,3 @@ and documentation output.
 - [Style Guide](docs/StyleGuide.md): Styling information.
 - [General Guidelines](docs/GeneralGuidelines.md): list of general guidelines for development, includes a list of 
 assumptions we can make on the code written.
-- [Module Conventions](docs/ModuleConventions.md): Information about creating new modules.

@@ -23,11 +23,11 @@ static int32_t bsearch_get_midpoint_safe(int32_t left_idx, int32_t right_idx)
     return left_idx + ((right_idx - left_idx)/2);
 }
 
-int bsearch_iter_init(BsearchIterator_t *iter, int32_t start_idx, int32_t stop_idx)
+ErrorCode_t bsearch_iter_init(BsearchIterator_t *iter, int32_t start_idx, int32_t stop_idx)
 {
     assert(iter);
 
-    if (start_idx >= stop_idx) return 1;
+    if (start_idx >= stop_idx) return ERR_INVALID_ARG;
 
     iter->status = BSEARCH_CONTINUE;
 
@@ -37,7 +37,7 @@ int bsearch_iter_init(BsearchIterator_t *iter, int32_t start_idx, int32_t stop_i
 
     iter->pivot_offset=0;
 
-    return 0;
+    return ERR_NONE;
 }
 
 void bsearch_iter_deinit(BsearchIterator_t *iter)
@@ -53,7 +53,7 @@ void bsearch_iter_deinit(BsearchIterator_t *iter)
 int32_t bsearch_iter_get_check_index(BsearchIterator_t *iter)
 {
     assert(iter);
-    
+
     return iter->pivot_idx + iter->pivot_offset;
 }
 
