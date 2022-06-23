@@ -11,7 +11,7 @@ if [[ -z $PROJECT_ROOT ]]; then
     exit 1
 fi
 
-DOCKER_PROJECT_ROOT="/usr/project"
+DOCKER_PROJECT_ROOT="//usr/project"
 
 pushd ${PROJECT_ROOT}
 
@@ -22,6 +22,6 @@ fi
 
 # bind our project root to the internal project root, then set PROJECT_ROOT as the internal
 docker run --rm --mount type=bind,source="${PROJECT_ROOT}",target="${DOCKER_PROJECT_ROOT}" \
--e "PROJECT_ROOT=${DOCKER_PROJECT_ROOT}" c-embedded-utils "/bin/bash ${DOCKER_PROJECT_ROOT}/build_scripts/dev_env_build.sh"
+-e "PROJECT_ROOT=${DOCKER_PROJECT_ROOT}" c-embedded-utils "${DOCKER_PROJECT_ROOT}/build_scripts/dev_env_build.sh"
 
 popd

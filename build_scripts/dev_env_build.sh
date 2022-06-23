@@ -13,29 +13,30 @@ if [[ -z $PROJECT_ROOT ]]; then
     exit 1
 fi
 
-ARTEFACTS_DIR=${PROJECT_ROOT}/build_temp 
-BUILD_DIR=${ARTEFACTS_DIR}/build
-COVERAGE_DIR=${ARTEFACTS_DIR}/coverage
+ARTEFACTS_DIR="${PROJECT_ROOT}/build_temp"
+BUILD_DIR="${ARTEFACTS_DIR}/build"
+COVERAGE_DIR="${ARTEFACTS_DIR}/coverage"
 
 # make all directories
 mkdir -p ${ARTEFACTS_DIR}
 mkdir -p ${BUILD_DIR}
 mkdir -p ${COVERAGE_DIR}
 
-# build and test
+# build for coverage and test
 pushd ${BUILD_DIR}
 
+export CFLAGS="--coverage -DNDEBUG"
+export LDFLAGS="--coverage -lgcov"
 cmake ${PROJECT_ROOT}
-cmake --build .
+cmake --build . --verbose
 ctest -T Test -V --no-compress-output --output-on-failure --no-tests=error
 
 popd
 
-
 #coverage
-pushd ${COVERAGE_DIR}
+pushd ${PROJECT_ROOT}
 
-gcovr -r ${PROJECT_ROOT} ${BUILD_DIR} --xml-pretty  --exclude-directories='.*\/extern\/.*' > coverage_report.xml
-gcovr -r ${PROJECT_ROOT} ${BUILD_DIR} --html --html-details -o coverage_report.html  --exclude-directories='.*\/extern\/.*'
+gcovr -f src -f tests -f include --xml-pretty > "${COVERAGE_DIR}/coverage_report.xml"
+gcovr -f src -f tests -f include --html --html-details -o "${COVERAGE_DIR}/coverage_report.html"
 
 popd
